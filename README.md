@@ -67,7 +67,7 @@ Tout est pensé pour te faire gagner du temps et rester focus sur le code.
 
 ## 🛠️ Statut du projet
 
-💡**Pas encore commencé**
+### 💡**Pas encore commencé**
 
 Je suis en train de faire la structure du projet.
 
