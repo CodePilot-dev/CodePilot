@@ -69,11 +69,11 @@ Tout est pensé pour te faire gagner du temps et rester focus sur le code.
 
 ### 💡**Pas encore commencé**
 
-Je suis en train de faire la structure du projet.
+La structure du projet est actuellement en cours de création.
 
-Dès que j'ai terminé, je publie tout.
+Dès qu’elle est finalisée, l’ensemble du code sera publié.
 
-Le statut est actualisé en temps réel
+🔄 Le statut est mis à jour en temps réel.
 
 ---
 
