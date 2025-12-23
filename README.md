@@ -67,9 +67,13 @@ Tout est pensé pour te faire gagner du temps et rester focus sur le code.
 
 ## 🛠️ Statut du projet
 
-🧪 **En cours de développement**
+💡**Pas encore commencé**
 
-De nouvelles fonctionnalités sont prévues, et le projet évolue activement.
+Je suis en train de faire la structure du projet.
+
+Dès que j'ai terminé, je publie tout.
+
+Le statut est actualisé en temps réel
 
 ---
 
