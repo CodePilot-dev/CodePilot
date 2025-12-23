@@ -2,7 +2,7 @@
 
 **CodePilot** est une application pensée **par et pour les développeurs**, qui centralise la gestion de tes projets au même endroit.
 
-Moins de clics, moins de galères ⚡
+Moins de clics, moins de galères, meilleur environnement ⚡
 
 > Un hub tout-en-un pour gérer, lancer et organiser tes projets de dev.
 
