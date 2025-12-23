@@ -85,3 +85,10 @@ Dès qu’elle est finalisée, l’ensemble du code sera publié.
 * 🔄 Support d’autres gestionnaires de paquets (pnpm, yarn…)
 * 🧩 Système de plugins / extensions
 * 🎨 Thèmes et personnalisation de l’interface
+
+---
+
+## Contribution 
+
+Toute contribution est la bienvenue! Pour des raisons de maintenance et de configuration, merci de faire votre contribution sur GitLab : https://gitlab.com/codepilot-dev/codepilot
+Merci à vous!
