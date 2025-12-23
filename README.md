@@ -4,6 +4,8 @@
 
 Moins de clics, moins de galères ⚡
 
+> Un hub tout-en-un pour gérer, lancer et organiser tes projets de dev.
+
 ---
 
 ## ✨ Fonctionnalités
