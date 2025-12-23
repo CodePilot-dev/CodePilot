@@ -81,7 +81,5 @@ Dès qu’elle est finalisée, l’ensemble du code sera publié.
 
 * Templates de projets
 * Support d’autres gestionnaires (pnpm, yarn…)
-* Intégration Docker
-* Synchronisation cloud
 * Plugins / extensions
 * Thèmes
