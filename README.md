@@ -90,6 +90,6 @@ Dès qu’elle est finalisée, l’ensemble du code sera publié.
 
 ## Contribution 
 
-Toute contribution est la bienvenue! Pour des raisons de maintenance et de configuration, merci de faire votre contribution sur GitLab : https://gitlab.com/codepilot-dev/codepilot
+Toute contribution est les bienvenues! Pour des raisons de maintenance et de configuration, merci de faire votre contribution sur GitLab : https://gitlab.com/codepilot-dev/codepilot
 
 Merci à vous!
