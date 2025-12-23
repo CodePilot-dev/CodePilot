@@ -79,7 +79,7 @@ Dès qu’elle est finalisée, l’ensemble du code sera publié.
 
 ## 💡 Idées futures (roadmap)
 
-*📦 Templates de projets
-*🔄 Support d’autres gestionnaires de paquets (pnpm, yarn…)
-*🧩 Système de plugins / extensions
-*🎨 Thèmes et personnalisation de l’interface
+* 📦 Templates de projets
+* 🔄 Support d’autres gestionnaires de paquets (pnpm, yarn…)
+* 🧩 Système de plugins / extensions
+* 🎨 Thèmes et personnalisation de l’interface
