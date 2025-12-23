@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🚀 CodePilot
 
 **CodePilot** est une application pensée **par et pour les développeurs**, qui centralise la gestion de tes projets au même endroit.
@@ -85,3 +86,6 @@ Dès qu’elle est finalisée, l’ensemble du code sera publié.
 * 🔄 Support d’autres gestionnaires de paquets (pnpm, yarn…)
 * 🧩 Système de plugins / extensions
 * 🎨 Thèmes et personnalisation de l’interface
+=======
+# CodePilot
+>>>>>>> a2ba298 (Initial commit)
