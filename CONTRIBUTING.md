@@ -80,6 +80,7 @@ GitHub :
 
 ---
 
+
 ## 5. Merci 🙏
 
 Chaque contribution, petite ou grande, aide à rendre **CodePilot** meilleur.
