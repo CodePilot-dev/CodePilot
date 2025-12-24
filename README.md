@@ -69,11 +69,9 @@ Tout est pensé pour te faire gagner du temps et rester focus sur le code.
 
 ## 🛠️ Statut du projet
 
-### 💡**Pas encore commencé**
+### 💡**En cours**
 
-La structure du projet est actuellement en cours de création.
-
-Dès qu’elle est finalisée, l’ensemble du code sera publié.
+L'application est en version alpha
 
 🔄 Le statut est mis à jour en temps réel.
 
