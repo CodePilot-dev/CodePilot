@@ -13,7 +13,16 @@
     "appId": "com.codepilot.app",
     "productName": "CodePilot",
     "win": {
-      "target": "portable"
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CodePilot"
     },
     "directories": {
       "output": "dist-electron"
@@ -21,8 +30,7 @@
     "files": [
       "dist/**/*",
       "main.js",
-      "preload.js",
-      "icon.ico"
+      "preload.js"
     ]
   },
   "devDependencies": {
