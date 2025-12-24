@@ -14,4 +14,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getConfig: () => ipcRenderer.invoke('get-config'),
     saveConfig: (config) => ipcRenderer.invoke('save-config', config),
     createRelease: (data) => ipcRenderer.invoke('create-release', data),
+    selectFile: (filters) => ipcRenderer.invoke('select-file', filters),
+    readFile: (path) => ipcRenderer.invoke('read-file', path),
 });

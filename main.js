@@ -51,6 +51,21 @@ ipcMain.handle('select-folder', async () => {
     return result.filePaths[0];
 });
 
+ipcMain.handle('select-file', async (event, filters) => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+        properties: ['openFile'],
+        filters: filters || []
+    });
+    return result.filePaths[0];
+});
+
+ipcMain.handle('read-file', (event, filePath) => {
+    if (fs.existsSync(filePath)) {
+        return fs.readFileSync(filePath, 'utf-8');
+    }
+    return null;
+});
+
 ipcMain.handle('read-package-json', (event, projectPath) => {
     const pkgPath = path.join(projectPath, 'package.json');
     if (fs.existsSync(pkgPath)) {

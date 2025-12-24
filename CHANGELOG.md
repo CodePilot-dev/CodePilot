@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.9] - 2025-12-24
+
+### Added
+- **Moteur de Thèmes (.thmx)** : Introduction d'un système de thèmes personnalisés. Créez et partagez vos propres designs avec l'extension de fichier `.thmx`.
+- **Importation de Thèmes** : Nouvelle option dans les réglages pour charger un fichier de thème et transformer instantanément l'apparence de l'application.
+
+### UI/UX
+- Ajout d'une section "Apparence" dans les paramètres.
+- Support du "Live Preview" lors de l'application d'un thème.
+- Correction d'un bug mineur dans la barre de titre.
+
+### Technical
+- Migration complète du design vers des variables CSS dynamiques pour une personnalisation à 100%.
+
+
 ## [0.0.8] - 2025-12-24
 
 ### Added

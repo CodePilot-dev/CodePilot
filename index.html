@@ -18,264 +18,264 @@
         <!-- Titlebar -->
         <div class="titlebar">
             <div class="drag-region">
-                <div class="logo">CODEPILOT/div>
+                <div class="logo">CODEPILOT</div>
+            </div>
+            <div class="window-controls">
+                <button id="minimize-btn" class="control-btn">—</button>
+                <button id="maximize-btn" class="control-btn">▢</button>
+                <button id="close-btn" class="control-btn close">✕</button>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Workspaces</h2>
+                    <div style="display: flex; gap: 5px;">
+                        <button id="show-settings-btn" class="icon-btn-small" title="Configuration">⚙️</button>
+                        <button id="add-space-btn" class="icon-btn-small" title="Nouvel espace">+</button>
+                    </div>
                 </div>
-                <div class="window-controls">
-                    <button id="minimize-btn" class="control-btn">—</button>
-                    <button id="maximize-btn" class="control-btn">▢</button>
-                    <button id="close-btn" class="control-btn close">✕</button>
+                <nav id="spaces-list" class="nav-list">
+                    <!-- Spaces injected here -->
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <header class="content-header">
+                    <div class="header-left">
+                        <h1 id="current-space-name">Mes Projets</h1>
+                        <span id="projects-count" class="badge">0 projets</span>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-box">
+                            <input type="text" id="project-search" placeholder="Quick search (Ctrl+K)...">
+                        </div>
+                        <button id="add-project-btn" class="primary-btn">
+                            + Nouveau Projet
+                        </button>
+                    </div>
+                </header>
+
+                <div id="projects-grid" class="projects-grid">
+                    <!-- Projects injected here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state hidden">
+                    <div class="empty-icon" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;">📂</div>
+                    <h3>Prêt à coder ?</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Ajoute ton premier projet pour
+                        commencer.
+                    </p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Hub Projet (Detail View) -->
+    <div id="project-detail-modal" class="modal hidden">
+        <div class="modal-content project-detail-view">
+            <button class="close-detail-btn" id="close-detail">✕</button>
+
+            <div class="detail-header">
+                <div class="detail-title-section">
+                    <h2 id="detail-name">Project Name</h2>
+                    <div id="detail-badges" class="detail-badges"></div>
+                </div>
+                <div class="detail-meta">
+                    <span id="detail-path">C:\Path\To\Project</span>
                 </div>
             </div>
 
-            <div class="main-layout">
-                <!-- Sidebar -->
-                <aside class="sidebar">
-                    <div class="sidebar-header">
-                        <h2>Workspaces</h2>
-                        <div style="display: flex; gap: 5px;">
-                            <button id="show-settings-btn" class="icon-btn-small" title="Configuration">⚙️</button>
-                            <button id="add-space-btn" class="icon-btn-small" title="Nouvel espace">+</button>
-                        </div>
-                    </div>
-                    <nav id="spaces-list" class="nav-list">
-                        <!-- Spaces injected here -->
-                    </nav>
-                </aside>
-
-                <!-- Main Content -->
-                <main class="content">
-                    <header class="content-header">
-                        <div class="header-left">
-                            <h1 id="current-space-name">Mes Projets</h1>
-                            <span id="projects-count" class="badge">0 projets</span>
-                        </div>
-                        <div class="header-right">
-                            <div class="search-box">
-                                <input type="text" id="project-search" placeholder="Quick search (Ctrl+K)...">
+            <div class="detail-body">
+                <!-- Left Column: Primary Actions & Content -->
+                <div class="detail-main-content">
+                    <div class="detail-main-actions">
+                        <button class="detail-action-btn" id="detail-open-folder">
+                            <span class="btn-icon">📁</span>
+                            <div class="btn-text">
+                                <strong>Dossier</strong>
+                                <span>Explorer les fichiers</span>
                             </div>
-                            <button id="add-project-btn" class="primary-btn">
-                                + Nouveau Projet
-                            </button>
-                        </div>
-                    </header>
-
-                    <div id="projects-grid" class="projects-grid">
-                        <!-- Projects injected here -->
-                    </div>
-
-                    <!-- Empty State -->
-                    <div id="empty-state" class="empty-state hidden">
-                        <div class="empty-icon" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.3;">📂</div>
-                        <h3>Prêt à coder ?</h3>
-                        <p style="color: var(--text-muted); margin-bottom: 20px;">Ajoute ton premier projet pour
-                            commencer.
-                        </p>
-                    </div>
-                </main>
-            </div>
-        </div>
-
-        <!-- Hub Projet (Detail View) -->
-        <div id="project-detail-modal" class="modal hidden">
-            <div class="modal-content project-detail-view">
-                <button class="close-detail-btn" id="close-detail">✕</button>
-
-                <div class="detail-header">
-                    <div class="detail-title-section">
-                        <h2 id="detail-name">Project Name</h2>
-                        <div id="detail-badges" class="detail-badges"></div>
-                    </div>
-                    <div class="detail-meta">
-                        <span id="detail-path">C:\Path\To\Project</span>
-                    </div>
-                </div>
-
-                <div class="detail-body">
-                    <!-- Left Column: Primary Actions & Content -->
-                    <div class="detail-main-content">
-                        <div class="detail-main-actions">
-                            <button class="detail-action-btn" id="detail-open-folder">
-                                <span class="btn-icon">📁</span>
-                                <div class="btn-text">
-                                    <strong>Dossier</strong>
-                                    <span>Explorer les fichiers</span>
-                                </div>
-                            </button>
-                            <button class="detail-action-btn" id="detail-open-terminal">
-                                <span class="btn-icon">💻</span>
-                                <div class="btn-text">
-                                    <strong>Terminal</strong>
-                                    <span>Lancer la console</span>
-                                </div>
-                            </button>
-                            <button class="detail-action-btn" id="detail-open-vscode">
-                                <span class="btn-icon">⚡</span>
-                                <div class="btn-text">
-                                    <strong id="detail-editor-name">VS Code</strong>
-                                    <span>Ouvrir l'IDE</span>
-                                </div>
-                            </button>
-                            <button class="detail-action-btn" id="detail-create-release">
-                                <span class="btn-icon">🚀</span>
-                                <div class="btn-text">
-                                    <strong>Release</strong>
-                                    <span>Taguer sur Git</span>
-                                </div>
-                            </button>
-                            <button class="detail-action-btn hidden" id="detail-open-git">
-                                <span class="btn-icon">📦</span>
-                                <div class="btn-text">
-                                    <strong>Git Repo</strong>
-                                    <span>Voir sur le cloud</span>
-                                </div>
-                            </button>
-                        </div>
-
-                        <div class="detail-section">
-                            <h4>Notes & Memo</h4>
-                            <div id="detail-notes" class="detail-notes-box"></div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column: Secondary Info -->
-                    <div class="detail-sidebar">
-                        <div class="detail-section" id="detail-scripts-container">
-                            <h4>Scripts NPM</h4>
-                            <div id="detail-scripts-list" class="scripts-grid"></div>
-                        </div>
-
-                        <div class="detail-section">
-                            <div class="detail-section-header">
-                                <h4>Roadmap / Updates</h4>
-                                <button id="add-project-update-btn" class="icon-btn-small">+</button>
+                        </button>
+                        <button class="detail-action-btn" id="detail-open-terminal">
+                            <span class="btn-icon">💻</span>
+                            <div class="btn-text">
+                                <strong>Terminal</strong>
+                                <span>Lancer la console</span>
                             </div>
-                            <div id="detail-updates-list" class="update-list-mini"></div>
+                        </button>
+                        <button class="detail-action-btn" id="detail-open-vscode">
+                            <span class="btn-icon">⚡</span>
+                            <div class="btn-text">
+                                <strong id="detail-editor-name">VS Code</strong>
+                                <span>Ouvrir l'IDE</span>
+                            </div>
+                        </button>
+                        <button class="detail-action-btn" id="detail-create-release">
+                            <span class="btn-icon">🚀</span>
+                            <div class="btn-text">
+                                <strong>Release</strong>
+                                <span>Taguer sur Git</span>
+                            </div>
+                        </button>
+                        <button class="detail-action-btn hidden" id="detail-open-git">
+                            <span class="btn-icon">📦</span>
+                            <div class="btn-text">
+                                <strong>Git Repo</strong>
+                                <span>Voir sur le cloud</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Notes & Memo</h4>
+                        <div id="detail-notes" class="detail-notes-box"></div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Secondary Info -->
+                <div class="detail-sidebar">
+                    <div class="detail-section" id="detail-scripts-container">
+                        <h4>Scripts NPM</h4>
+                        <div id="detail-scripts-list" class="scripts-grid"></div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="detail-section-header">
+                            <h4>Roadmap / Updates</h4>
+                            <button id="add-project-update-btn" class="icon-btn-small">+</button>
                         </div>
+                        <div id="detail-updates-list" class="update-list-mini"></div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Modals (Add Space/Project/Update) -->
-        <div id="space-modal" class="modal hidden">
-            <div class="modal-content">
-                <h3>Nouveau Espace</h3>
-                <div class="input-group">
-                    <label>Nom de l'espace</label>
-                    <input type="text" id="space-name-input" placeholder="ex: Freelance, Perso...">
-                </div>
-                <div class="modal-actions">
-                    <button class="text-btn" id="cancel-space">Annuler</button>
-                    <button class="primary-btn" id="confirm-space">Créer</button>
-                </div>
+    <!-- Modals (Add Space/Project/Update) -->
+    <div id="space-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Nouveau Espace</h3>
+            <div class="input-group">
+                <label>Nom de l'espace</label>
+                <input type="text" id="space-name-input" placeholder="ex: Freelance, Perso...">
+            </div>
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-space">Annuler</button>
+                <button class="primary-btn" id="confirm-space">Créer</button>
             </div>
         </div>
+    </div>
 
-        <div id="project-modal" class="modal hidden">
-            <div class="modal-content">
-                <h3 id="project-modal-title">Nouveau Projet</h3>
-                <div class="input-group">
-                    <label>Nom du projet</label>
-                    <input type="text" id="project-name-input" placeholder="Mon super projet">
-                </div>
-                <div class="input-group">
-                    <label>Chemin local</label>
-                    <div class="file-input-wrapper" style="display: flex; gap: 8px;">
-                        <input type="text" id="project-path-input" readonly style="flex: 1;">
-                        <button class="secondary-btn" id="select-path-btn">...</button>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>Repo URL</label>
-                    <input type="text" id="project-repo-input" placeholder="https://github.com/...">
-                </div>
-                <div class="input-group">
-                    <label>Commande Éditeur</label>
-                    <input type="text" id="project-editor-input" placeholder="code" value="code">
-                </div>
-                <div class="input-group">
-                    <label>Notes</label>
-                    <textarea id="project-notes-input" style="height: 80px;"></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button class="text-btn" id="cancel-project">Annuler</button>
-                    <button class="primary-btn" id="confirm-project">Sauvegarder</button>
+    <div id="project-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="project-modal-title">Nouveau Projet</h3>
+            <div class="input-group">
+                <label>Nom du projet</label>
+                <input type="text" id="project-name-input" placeholder="Mon super projet">
+            </div>
+            <div class="input-group">
+                <label>Chemin local</label>
+                <div class="file-input-wrapper" style="display: flex; gap: 8px;">
+                    <input type="text" id="project-path-input" readonly style="flex: 1;">
+                    <button class="secondary-btn" id="select-path-btn">...</button>
                 </div>
             </div>
-        </div>
-
-        <div id="update-modal" class="modal hidden">
-            <div class="modal-content">
-                <h3>Programmer une MAJ</h3>
-                <div class="input-group">
-                    <label>Titre</label>
-                    <input type="text" id="update-title-input">
-                </div>
-                <div class="input-group">
-                    <label>Description</label>
-                    <textarea id="update-desc-input" style="height: 80px;"></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button class="text-btn" id="cancel-update">Annuler</button>
-                    <button class="primary-btn" id="confirm-update">Programmer</button>
-                </div>
+            <div class="input-group">
+                <label>Repo URL</label>
+                <input type="text" id="project-repo-input" placeholder="https://github.com/...">
+            </div>
+            <div class="input-group">
+                <label>Commande Éditeur</label>
+                <input type="text" id="project-editor-input" placeholder="code" value="code">
+            </div>
+            <div class="input-group">
+                <label>Notes</label>
+                <textarea id="project-notes-input" style="height: 80px;"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-project">Annuler</button>
+                <button class="primary-btn" id="confirm-project">Sauvegarder</button>
             </div>
         </div>
+    </div>
 
-        <div id="release-modal" class="modal hidden">
-            <div class="modal-content" style="width: 550px;">
-                <h3>🚀 Créer une Release</h3>
-                <p id="release-project-name" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">
-                </p>
-
-                <div class="input-group">
-                    <label>Version (Tag)</label>
-                    <input type="text" id="release-tag-input" placeholder="ex: v1.0.0">
-                </div>
-                <div class="input-group">
-                    <label>Titre de la release</label>
-                    <input type="text" id="release-title-input" placeholder="ex: Initial Launch">
-                </div>
-                <div class="input-group" style="display: flex; flex-direction: column;">
-                    <label>Description (Markdown)</label>
-                    <textarea id="release-body-input"
-                        style="height: 150px; background: var(--bg-app); color: white; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-family: var(--font-mono); font-size: 0.8rem;"
-                        placeholder="Détaillez les changements..."></textarea>
-                </div>
-
-                <div class="modal-actions">
-                    <button class="text-btn" id="cancel-release">Annuler</button>
-                    <button class="primary-btn" id="confirm-release">Publier</button>
-                </div>
+    <div id="update-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Programmer une MAJ</h3>
+            <div class="input-group">
+                <label>Titre</label>
+                <input type="text" id="update-title-input">
+            </div>
+            <div class="input-group">
+                <label>Description</label>
+                <textarea id="update-desc-input" style="height: 80px;"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-update">Annuler</button>
+                <button class="primary-btn" id="confirm-update">Programmer</button>
             </div>
         </div>
+    </div>
 
-        <div id="settings-modal" class="modal hidden">
-            <div class="modal-content">
-                <h3>⚙️ Configuration</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Tes jetons d'accès
-                    personnels
-                    (PAT) pour les releases Git.</p>
+    <div id="release-modal" class="modal hidden">
+        <div class="modal-content" style="width: 550px;">
+            <h3>🚀 Créer une Release</h3>
+            <p id="release-project-name" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">
+            </p>
 
-                <div class="input-group">
-                    <label>GitHub Personal Access Token</label>
-                    <input type="password" id="github-token-input" placeholder="ghp_...">
-                </div>
-                <div class="input-group">
-                    <label>GitLab Private Token</label>
-                    <input type="password" id="gitlab-token-input" placeholder="glpat-...">
-                </div>
+            <div class="input-group">
+                <label>Version (Tag)</label>
+                <input type="text" id="release-tag-input" placeholder="ex: v1.0.0">
+            </div>
+            <div class="input-group">
+                <label>Titre de la release</label>
+                <input type="text" id="release-title-input" placeholder="ex: Initial Launch">
+            </div>
+            <div class="input-group" style="display: flex; flex-direction: column;">
+                <label>Description (Markdown)</label>
+                <textarea id="release-body-input"
+                    style="height: 150px; background: var(--bg-app); color: white; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-family: var(--font-mono); font-size: 0.8rem;"
+                    placeholder="Détaillez les changements..."></textarea>
+            </div>
 
-                <div class="modal-actions">
-                    <button class="text-btn" id="cancel-settings">Fermer</button>
-                    <button class="primary-btn" id="confirm-settings">Sauvegarder</button>
-                </div>
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-release">Annuler</button>
+                <button class="primary-btn" id="confirm-release">Publier</button>
             </div>
         </div>
+    </div>
 
-        <div id="toast-container"></div>
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>⚙️ Configuration</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Tes jetons d'accès
+                personnels
+                (PAT) pour les releases Git.</p>
 
-        <script type="module" src="renderer.js"></script>
+            <div class="input-group">
+                <label>GitHub Personal Access Token</label>
+                <input type="password" id="github-token-input" placeholder="ghp_...">
+            </div>
+            <div class="input-group">
+                <label>GitLab Private Token</label>
+                <input type="password" id="gitlab-token-input" placeholder="glpat-...">
+            </div>
+
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-settings">Fermer</button>
+                <button class="primary-btn" id="confirm-settings">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script type="module" src="renderer.js"></script>
 </body>
 
 </html>
