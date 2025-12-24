@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Custom Titlebar -->
+        <div class="titlebar">
+            <div class="drag-region">
+                <div class="logo">
+                    <span class="logo-icon">🚀</span>
+                    CodePilot
+                </div>
+            </div>
+            <div class="window-controls">
+                <button id="minimize-btn" class="control-btn">—</button>
+                <button id="maximize-btn" class="control-btn">▢</button>
+                <button id="close-btn" class="control-btn close">✕</button>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <!-- Sidebar for Spaces -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Espaces</h2>
+                    <button id="add-space-btn" class="icon-btn" title="Nouveau espace">+</button>
+                </div>
+                <nav id="spaces-list" class="nav-list">
+                    <!-- Spaces will be injected here -->
+                </nav>
+            </aside>
+
+            <!-- Main Content for Projects -->
+            <main class="content">
+                <header class="content-header">
+                    <div class="header-left">
+                        <h1 id="current-space-name">Mes Projets</h1>
+                        <span id="projects-count" class="badge">0 projets</span>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-box">
+                            <input type="text" id="project-search" placeholder="Rechercher un projet...">
+                        </div>
+                        <button id="add-project-btn" class="primary-btn">
+                            <span class="btn-icon">+</span> Nouveau Projet
+                        </button>
+                    </div>
+                </header>
+
+                <div id="projects-grid" class="projects-grid">
+                    <!-- Projects will be injected here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state hidden">
+                    <div class="empty-icon">📂</div>
+                    <h3>Aucun projet ici</h3>
+                    <p>Commence par ajouter ton premier projet dans cet espace.</p>
+                    <button class="secondary-btn" onclick="document.getElementById('add-project-btn').click()">Ajouter
+                        un projet</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="space-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Nouveau Espace</h3>
+            <div class="input-group">
+                <label>Nom de l'espace</label>
+                <input type="text" id="space-name-input" placeholder="ex: Freelance, Perso...">
+            </div>
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-space">Annuler</button>
+                <button class="primary-btn" id="confirm-space">Créer l'espace</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="project-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="project-modal-title">Nouveau Projet</h3>
+            <div class="input-group">
+                <label>Nom du projet</label>
+                <input type="text" id="project-name-input" placeholder="Mon super projet">
+            </div>
+            <div class="input-group">
+                <label>Dossier du projet</label>
+                <div class="file-input-wrapper">
+                    <input type="text" id="project-path-input" readonly placeholder="C:\Users\...">
+                    <button class="secondary-btn" id="select-path-btn">Choisir</button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Repo URL (GitHub/GitLab)</label>
+                <input type="text" id="project-repo-input" placeholder="https://github.com/...">
+            </div>
+            <div class="input-group">
+                <label>Commande Éditeur (ex: code, cursor, vscodium)</label>
+                <input type="text" id="project-editor-input" placeholder="code" value="code">
+            </div>
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-project">Annuler</button>
+                <button class="primary-btn" id="confirm-project">Ajouter le projet</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="renderer.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "codepilot",
+  "version": "0.0.1",
+  "description": "CodePilot - Your ultimate dev project hub",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "start": "electron .",
+    "build": "vite build && electron-builder"
+  },
+  "build": {
+    "appId": "com.codepilot.app",
+    "productName": "CodePilot",
+    "win": {
+      "target": "portable"
+    },
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js",
+      "icon.ico"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^24.13.3",
+    "vite": "^6.0.5"
+  }
+}
