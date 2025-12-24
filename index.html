@@ -40,6 +40,11 @@
                 <nav id="spaces-list" class="nav-list">
                     <!-- Spaces will be injected here -->
                 </nav>
+                <div class="sidebar-footer">
+                    <button id="show-updates-btn" class="update-btn-sidebar">
+                        <span>🔔</span> Mises à jour
+                    </button>
+                </div>
             </aside>
 
             <!-- Main Content for Projects -->
@@ -61,6 +66,18 @@
 
                 <div id="projects-grid" class="projects-grid">
                     <!-- Projects will be injected here -->
+                </div>
+
+                <!-- Updates View -->
+                <div id="updates-view" class="updates-view hidden">
+                    <div class="header-actions">
+                        <button id="add-update-btn" class="primary-btn add-update-btn">
+                            + Prévoir une mise à jour
+                        </button>
+                    </div>
+                    <div id="updates-list" class="update-list-container">
+                        <!-- Updates will be injected here -->
+                    </div>
                 </div>
 
                 <!-- Empty State -->
@@ -181,6 +198,26 @@
             </div>
         </div>
     </div>
+
+    <div id="update-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Prévoir une Mise à jour</h3>
+            <div class="input-group">
+                <label>Titre de la MAJ</label>
+                <input type="text" id="update-title-input" placeholder="ex: V0.0.6 - Thème Sombre">
+            </div>
+            <div class="input-group">
+                <label>Description / Actions à faire</label>
+                <textarea id="update-desc-input" placeholder="Détaillez les changements prévus..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-update">Annuler</button>
+                <button class="primary-btn" id="confirm-update">Programmer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
 
     <script type="module" src="renderer.js"></script>
 </body>
