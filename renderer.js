@@ -4,6 +4,7 @@ let config = {
     activeSpaceId: 'default'
 };
 let editingProjectId = null;
+let currentDetailProject = null;
 
 // DOM Elements
 const spacesList = document.getElementById('spaces-list');
@@ -16,8 +17,17 @@ const projectSearch = document.getElementById('project-search');
 // Modals
 const spaceModal = document.getElementById('space-modal');
 const projectModal = document.getElementById('project-modal');
+const detailModal = document.getElementById('project-detail-modal');
 const addSpaceBtn = document.getElementById('add-space-btn');
 const addProjectBtn = document.getElementById('add-project-btn');
+
+// Detail Elements
+const detailName = document.getElementById('detail-name');
+const detailPath = document.getElementById('detail-path');
+const detailBadges = document.getElementById('detail-badges');
+const detailNotes = document.getElementById('detail-notes');
+const detailScriptsList = document.getElementById('detail-scripts-list');
+const detailEditorName = document.getElementById('detail-editor-name');
 
 // Initialize
 async function init() {
@@ -34,6 +44,18 @@ async function init() {
 // Rendering
 function renderSpaces() {
     spacesList.innerHTML = '';
+
+    // Add "Tous les projets" entry
+    const allItem = document.createElement('div');
+    allItem.className = `nav-item ${config.activeSpaceId === 'all' ? 'active' : ''}`;
+    allItem.innerHTML = `<span>🚀 Tous les projets</span>`;
+    allItem.onclick = () => {
+        config.activeSpaceId = 'all';
+        renderSpaces();
+        renderProjects();
+    };
+    spacesList.appendChild(allItem);
+
     config.spaces.forEach(space => {
         const item = document.createElement('div');
         item.className = `nav-item ${space.id === config.activeSpaceId ? 'active' : ''}`;
@@ -56,11 +78,18 @@ function renderSpaces() {
 }
 
 async function renderProjects() {
-    const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
-    if (!activeSpace) return;
+    let projects = [];
+    if (config.activeSpaceId === 'all') {
+        currentSpaceName.textContent = "Tous les projets";
+        projects = config.spaces.flatMap(s => s.projects);
+    } else {
+        const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
+        if (!activeSpace) return;
+        currentSpaceName.textContent = activeSpace.name;
+        projects = activeSpace.projects;
+    }
 
-    currentSpaceName.textContent = activeSpace.name;
-
+    const searchTerm = projectSearch.value.toLowerCase();
     if (searchTerm) {
         projects = projects.filter(p =>
             p.name.toLowerCase().includes(searchTerm) ||
@@ -90,9 +119,7 @@ async function createProjectCard(project) {
     const card = document.createElement('div');
     card.className = `project-card ${project.pinned ? 'pinned' : ''}`;
 
-    // Fetch package.json info for scripts and framework detection
     const pkg = await window.electronAPI.readPackageJson(project.path);
-    const scripts = pkg && pkg.scripts ? Object.keys(pkg.scripts) : [];
     const framework = detectFramework(pkg);
 
     card.innerHTML = `
@@ -105,41 +132,19 @@ async function createProjectCard(project) {
         </div>
         <div class="project-info">
             <div class="project-title-row">
-                <h3>${project.name} ${project.repoUrl ? '🔗' : ''}</h3>
+                <h3>${project.name}</h3>
                 ${framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : ''}
             </div>
-            <div class="project-path">${project.path}</div>
-            ${project.notes ? `<div class="project-notes">${project.notes}</div>` : ''}
         </div>
-        <div class="project-actions">
-            <button class="action-btn" data-action="folder">
-                <span>📁</span>
-                <span>Dossier</span>
-            </button>
-            <button class="action-btn" data-action="terminal">
-                <span>💻</span>
-                <span>Terminal</span>
-            </button>
-            <button class="action-btn" data-action="vscode" data-editor="${project.editor || 'code'}">
-                <span>⚡</span>
-                <span>${project.editor === 'cursor' ? 'Cursor' : 'VS Code'}</span>
-            </button>
-            ${project.repoUrl ? `
-            <button class="action-btn" data-action="git">
-                <span>📦</span>
-                <span>Repo</span>
-            </button>` : ''}
-        </div>
-        ${scripts.length > 0 ? `
-        <div class="scripts-section">
-            <div class="scripts-header">Scripts npm</div>
-            <div class="scripts-list">
-                ${scripts.map(s => `<span class="script-tag" data-script="${s}">npm run ${s}</span>`).join('')}
-            </div>
-        </div>` : ''}
     `;
 
-    // Event Listeners for card actions
+    // Click on card to open detail
+    card.onclick = (e) => {
+        if (!e.target.closest('.project-card-header')) {
+            openDetailModal(project);
+        }
+    };
+
     card.querySelector('.delete-project').onclick = (e) => {
         e.stopPropagation();
         deleteProject(project.id);
@@ -155,31 +160,49 @@ async function createProjectCard(project) {
         togglePin(project.id);
     };
 
-    card.querySelectorAll('.action-btn').forEach(btn => {
-        btn.onclick = () => {
-            const action = btn.dataset.action;
-            const editor = btn.dataset.editor || 'code';
-            if (action === 'folder') window.electronAPI.openFolder(project.path);
-            if (action === 'terminal') window.electronAPI.openTerminal(project.path);
-            if (action === 'vscode') window.electronAPI.openVSCode({ path: project.path, command: editor });
-            if (action === 'git') window.electronAPI.openExternal(project.repoUrl);
-        };
-    });
-
-    card.querySelectorAll('.script-tag').forEach(tag => {
-        tag.onclick = () => {
-            window.electronAPI.runNpmScript({
-                projectPath: project.path,
-                script: tag.dataset.script
-            });
-        };
-    });
-
     return card;
 }
 
-// Add data-editor attribute to the button in the template
-// I need to update the card.innerHTML line in renderer.js
+// Detail View Logic
+async function openDetailModal(project) {
+    currentDetailProject = project;
+    detailName.textContent = project.name;
+    detailPath.textContent = project.path;
+    detailNotes.textContent = project.notes || 'Aucune note pour ce projet.';
+    detailEditorName.textContent = project.editor || 'VS Code';
+
+    // Framework Badge in detail
+    const pkg = await window.electronAPI.readPackageJson(project.path);
+    const framework = detectFramework(pkg);
+    detailBadges.innerHTML = framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : '';
+
+    // NPM Scripts
+    const scripts = pkg && pkg.scripts ? Object.keys(pkg.scripts) : [];
+    detailScriptsList.innerHTML = '';
+    if (scripts.length > 0) {
+        document.getElementById('detail-scripts-container').classList.remove('hidden');
+        scripts.forEach(script => {
+            const tag = document.createElement('div');
+            tag.className = 'detail-script-tag';
+            tag.textContent = `npm run ${script}`;
+            tag.onclick = () => window.electronAPI.runNpmScript({ projectPath: project.path, script });
+            detailScriptsList.appendChild(tag);
+        });
+    } else {
+        document.getElementById('detail-scripts-container').classList.add('hidden');
+    }
+
+    // Git Repo
+    const gitBtn = document.getElementById('detail-open-git');
+    if (project.repoUrl) {
+        gitBtn.classList.remove('hidden');
+        gitBtn.onclick = () => window.electronAPI.openExternal(project.repoUrl);
+    } else {
+        gitBtn.classList.add('hidden');
+    }
+
+    detailModal.classList.remove('hidden');
+}
 
 // Actions
 function save() {
@@ -197,28 +220,27 @@ function deleteSpace(id) {
 }
 
 function deleteProject(id) {
-    if (confirm('Supprimer ce projet de l\'espace ?')) {
-        const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
-        activeSpace.projects = activeSpace.projects.filter(p => p.id !== id);
+    if (confirm('Supprimer ce projet ?')) {
+        config.spaces.forEach(space => {
+            space.projects = space.projects.filter(p => p.id !== id);
+        });
         renderProjects();
         save();
     }
 }
 
 function togglePin(id) {
-    const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
-    const project = activeSpace.projects.find(p => p.id === id);
-    if (project) {
-        project.pinned = !project.pinned;
-        renderProjects();
-        save();
-    }
+    config.spaces.forEach(space => {
+        const project = space.projects.find(p => p.id === id);
+        if (project) project.pinned = !project.pinned;
+    });
+    renderProjects();
+    save();
 }
 
 function detectFramework(pkg) {
     if (!pkg) return null;
     const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
-
     if (allDeps['next']) return { id: 'next', name: 'Next.js' };
     if (allDeps['react']) return { id: 'react', name: 'React' };
     if (allDeps['vue']) return { id: 'vue', name: 'Vue' };
@@ -226,7 +248,6 @@ function detectFramework(pkg) {
     if (allDeps['electron']) return { id: 'electron', name: 'Electron' };
     if (allDeps['vite']) return { id: 'vite', name: 'Vite' };
     if (allDeps['typescript']) return { id: 'ts', name: 'TS' };
-
     return null;
 }
 
@@ -246,59 +267,52 @@ function closeProjectModal() {
     projectModal.classList.add('hidden');
     editingProjectId = null;
     document.getElementById('project-modal-title').textContent = 'Nouveau Projet';
-    document.getElementById('project-name-input').value = '';
-    document.getElementById('project-path-input').value = '';
-    document.getElementById('project-repo-input').value = '';
-    document.getElementById('project-editor-input').value = 'code';
-    document.getElementById('project-notes-input').value = '';
-    document.getElementById('confirm-project').textContent = 'Ajouter le projet';
 }
 
 // Event Listeners Setup
 function setupEventListeners() {
-    // Search
     projectSearch.oninput = () => renderProjects();
-
-    // Modals
     addSpaceBtn.onclick = () => spaceModal.classList.remove('hidden');
     addProjectBtn.onclick = () => {
         editingProjectId = null;
-        closeProjectModal(); // Reset fields
+        document.getElementById('project-name-input').value = '';
+        document.getElementById('project-path-input').value = '';
+        document.getElementById('project-repo-input').value = '';
+        document.getElementById('project-editor-input').value = 'code';
+        document.getElementById('project-notes-input').value = '';
+        document.getElementById('confirm-project').textContent = 'Ajouter le projet';
         projectModal.classList.remove('hidden');
     };
 
     document.getElementById('cancel-space').onclick = () => spaceModal.classList.add('hidden');
-    document.getElementById('cancel-project').onclick = () => closeProjectModal();
+    document.getElementById('cancel-project').onclick = () => projectModal.classList.add('hidden');
+    document.getElementById('close-detail').onclick = () => detailModal.classList.add('hidden');
 
-    // Space Creation
+    // Detail Actions
+    document.getElementById('detail-open-folder').onclick = () => window.electronAPI.openFolder(currentDetailProject.path);
+    document.getElementById('detail-open-terminal').onclick = () => window.electronAPI.openTerminal(currentDetailProject.path);
+    document.getElementById('detail-open-vscode').onclick = () => window.electronAPI.openVSCode({
+        path: currentDetailProject.path,
+        command: currentDetailProject.editor || 'code'
+    });
+
     document.getElementById('confirm-space').onclick = () => {
         const name = document.getElementById('space-name-input').value.trim();
         if (name) {
-            const newSpace = {
-                id: Date.now().toString(),
-                name: name,
-                projects: []
-            };
-            config.spaces.push(newSpace);
-            config.activeSpaceId = newSpace.id;
+            config.spaces.push({ id: Date.now().toString(), name, projects: [] });
             renderSpaces();
-            renderProjects();
             save();
             spaceModal.classList.add('hidden');
             document.getElementById('space-name-input').value = '';
         }
     };
 
-    // Project Creation
     document.getElementById('select-path-btn').onclick = async () => {
         const path = await window.electronAPI.selectFolder();
         if (path) {
             document.getElementById('project-path-input').value = path;
-            // Auto-fill name if empty
             const nameInput = document.getElementById('project-name-input');
-            if (!nameInput.value) {
-                nameInput.value = path.split(/[\\/]/).pop();
-            }
+            if (!nameInput.value) nameInput.value = path.split(/[\\/]/).pop();
         }
     };
 
@@ -310,36 +324,26 @@ function setupEventListeners() {
         const notes = document.getElementById('project-notes-input').value.trim();
 
         if (name && path) {
-            const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
-
             if (editingProjectId) {
-                const project = activeSpace.projects.find(p => p.id === editingProjectId);
-                if (project) {
-                    project.name = name;
-                    project.path = path;
-                    project.repoUrl = repoUrl;
-                    project.editor = editor;
-                    project.notes = notes;
-                }
-            } else {
-                activeSpace.projects.push({
-                    id: Date.now().toString(),
-                    name,
-                    path,
-                    repoUrl,
-                    editor,
-                    notes,
-                    pinned: false
+                config.spaces.forEach(s => {
+                    const project = s.projects.find(p => p.id === editingProjectId);
+                    if (project) {
+                        project.name = name; project.path = path;
+                        project.repoUrl = repoUrl; project.editor = editor;
+                        project.notes = notes;
+                    }
                 });
+            } else {
+                const spaceId = config.activeSpaceId === 'all' ? 'default' : config.activeSpaceId;
+                const space = config.spaces.find(s => s.id === spaceId);
+                space.projects.push({ id: Date.now().toString(), name, path, repoUrl, editor, notes, pinned: false });
             }
-
             renderProjects();
             save();
-            closeProjectModal();
+            projectModal.classList.add('hidden');
         }
     };
 
-    // Window Controls
     document.getElementById('minimize-btn').onclick = () => window.electronAPI.minimize();
     document.getElementById('maximize-btn').onclick = () => window.electronAPI.maximize();
     document.getElementById('close-btn').onclick = () => window.electronAPI.close();
