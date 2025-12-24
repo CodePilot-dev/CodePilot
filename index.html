@@ -136,7 +136,7 @@
                     </button>
                 </div>
 
-                <div class="detail-section">
+                <div class="detail-section" id="detail-notes-container">
                     <h4>Notes</h4>
                     <div id="detail-notes" class="detail-notes-box"></div>
                 </div>
@@ -145,6 +145,39 @@
                     <h4>Scripts NPM</h4>
                     <div id="detail-scripts-list" class="scripts-grid"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="project-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="project-modal-title">Nouveau Projet</h3>
+            <div class="input-group">
+                <label>Nom du projet</label>
+                <input type="text" id="project-name-input" placeholder="Mon super projet">
+            </div>
+            <div class="input-group">
+                <label>Dossier du projet</label>
+                <div class="file-input-wrapper">
+                    <input type="text" id="project-path-input" readonly placeholder="C:\Users\...">
+                    <button class="secondary-btn" id="select-path-btn">Choisir</button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Repo URL (GitHub/GitLab)</label>
+                <input type="text" id="project-repo-input" placeholder="https://github.com/...">
+            </div>
+            <div class="input-group">
+                <label>Commande Éditeur (ex: code, cursor, vscodium)</label>
+                <input type="text" id="project-editor-input" placeholder="code" value="code">
+            </div>
+            <div class="input-group">
+                <label>Notes du projet (TODOs, Rappels...)</label>
+                <textarea id="project-notes-input" placeholder="Points clés du projet..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="text-btn" id="cancel-project">Annuler</button>
+                <button class="primary-btn" id="confirm-project">Ajouter le projet</button>
             </div>
         </div>
     </div>
