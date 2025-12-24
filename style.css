@@ -950,3 +950,84 @@ textarea:focus {
     margin-top: 12px;
     border: 1px solid var(--border);
 }
+
+/* Tags System */
+.project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.tag-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.tag-chip {
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.tag-chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tag-chip.selected {
+    border-color: var(--primary);
+    background: rgba(139, 92, 246, 0.1);
+    color: white;
+}
+
+/* Manage Tags in Settings */
+.manage-tags-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.tag-manager-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.tag-manager-item input[type="text"] {
+    flex: 1;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+}
+
+.tag-manager-item input[type="color"] {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+}

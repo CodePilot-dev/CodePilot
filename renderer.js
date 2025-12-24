@@ -1,15 +1,19 @@
-// State Management
 let config = {
     spaces: [{ id: 'default', name: 'Général', projects: [] }],
     activeSpaceId: 'default',
     settings: {
         githubToken: '',
         gitlabToken: '',
-        theme: null // Custom .thmx data
+        theme: null,
+        globalTags: [
+            { id: '1', name: 'En cours', color: '#38bdf8' },
+            { id: '2', name: 'Terminé', color: '#10b981' }
+        ]
     }
 };
 let editingProjectId = null;
 let currentDetailProject = null;
+let selectedProjectTags = []; // Temporary storage for modal
 const APP_VERSION = '0.0.9';
 
 function truncatePath(path) {
@@ -57,7 +61,13 @@ async function init() {
     if (savedConfig) {
         config = savedConfig;
         if (!config.activeSpaceId) config.activeSpaceId = config.spaces[0].id;
-        if (!config.settings) config.settings = { githubToken: '', gitlabToken: '' };
+        if (!config.settings) config.settings = {};
+        if (!config.settings.globalTags) {
+            config.settings.globalTags = [
+                { id: '1', name: 'En cours', color: '#38bdf8' },
+                { id: '2', name: 'Terminé', color: '#10b981' }
+            ];
+        }
     }
     renderSpaces();
     renderProjects();
@@ -171,6 +181,13 @@ async function createProjectCard(project) {
                 ${framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : ''}
             </div>
             <p>${truncatePath(project.path)}</p>
+            <div class="project-tags">
+                ${(project.tags || []).map(tagId => {
+        const tag = config.settings.globalTags.find(t => t.id === tagId);
+        if (!tag) return '';
+        return `<span class="tag" style="--tag-color: ${tag.color}; border-color: ${tag.color}44; background: ${tag.color}11;">${tag.name}</span>`;
+    }).join('')}
+            </div>
         </div>
     `;
 
@@ -202,6 +219,21 @@ async function openDetailModal(project) {
     detailName.textContent = project.name;
     detailPath.textContent = project.path;
     detailNotes.textContent = project.notes || 'Aucune note pour ce projet.';
+
+    // Render tags in detail
+    const tagsContainer = document.createElement('div');
+    tagsContainer.className = 'project-tags';
+    tagsContainer.style.marginBottom = '20px';
+    tagsContainer.innerHTML = (project.tags || []).map(tagId => {
+        const tag = config.settings.globalTags.find(t => t.id === tagId);
+        if (!tag) return '';
+        return `<span class="tag" style="--tag-color: ${tag.color}; border-color: ${tag.color}44; background: ${tag.color}11;">${tag.name}</span>`;
+    }).join('');
+
+    // Clear old tags if re-opening (though modal is hidden)
+    const existingTags = detailPath.parentElement.querySelector('.project-tags');
+    if (existingTags) existingTags.remove();
+    detailPath.after(tagsContainer);
 
 
     const pkg = await window.electronAPI.readPackageJson(project.path);

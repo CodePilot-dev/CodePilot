@@ -181,6 +181,12 @@
                 <input type="text" id="project-repo-input" placeholder="https://github.com/...">
             </div>
             <div class="input-group">
+                <label>Étiquettes</label>
+                <div id="project-tag-selector" class="tag-selector">
+                    <!-- Dynamic tags here -->
+                </div>
+            </div>
+            <div class="input-group">
                 <label>Commande Éditeur</label>
                 <input type="text" id="project-editor-input" placeholder="code" value="code">
             </div>
@@ -275,6 +281,18 @@
                 </div>
                 <p id="current-theme-name" style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">Thème
                     par défaut</p>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+            <div class="input-group">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>Gestion des Étiquettes</label>
+                    <button class="icon-btn-small" id="add-global-tag-btn" title="Ajouter une étiquette">+</button>
+                </div>
+                <div id="manage-tags-list" class="manage-tags-list">
+                    <!-- Global tags management here -->
+                </div>
             </div>
 
             <div class="modal-actions">
