@@ -49,7 +49,7 @@ const detailBadges = document.getElementById('detail-badges');
 const detailNotes = document.getElementById('detail-notes');
 const detailScriptsList = document.getElementById('detail-scripts-list');
 const detailUpdatesList = document.getElementById('detail-updates-list');
-const detailEditorName = document.getElementById('detail-editor-name');
+
 
 // Initialize
 async function init() {
@@ -202,7 +202,7 @@ async function openDetailModal(project) {
     detailName.textContent = project.name;
     detailPath.textContent = project.path;
     detailNotes.textContent = project.notes || 'Aucune note pour ce projet.';
-    detailEditorName.textContent = project.editor || 'VS Code';
+
 
     const pkg = await window.electronAPI.readPackageJson(project.path);
     const framework = detectFramework(pkg);
