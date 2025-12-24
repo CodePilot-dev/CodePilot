@@ -90,35 +90,61 @@
         </div>
     </div>
 
-    <div id="project-modal" class="modal hidden">
-        <div class="modal-content">
-            <h3 id="project-modal-title">Nouveau Projet</h3>
-            <div class="input-group">
-                <label>Nom du projet</label>
-                <input type="text" id="project-name-input" placeholder="Mon super projet">
-            </div>
-            <div class="input-group">
-                <label>Dossier du projet</label>
-                <div class="file-input-wrapper">
-                    <input type="text" id="project-path-input" readonly placeholder="C:\Users\...">
-                    <button class="secondary-btn" id="select-path-btn">Choisir</button>
+    <div id="project-detail-modal" class="modal hidden">
+        <div class="modal-content project-detail-view">
+            <button class="close-detail-btn" id="close-detail">✕</button>
+
+            <div class="detail-header">
+                <div class="detail-title-section">
+                    <h2 id="detail-name">Project Name</h2>
+                    <div id="detail-badges" class="detail-badges"></div>
+                </div>
+                <div class="detail-meta">
+                    <span id="detail-path">C:\Path\To\Project</span>
                 </div>
             </div>
-            <div class="input-group">
-                <label>Repo URL (GitHub/GitLab)</label>
-                <input type="text" id="project-repo-input" placeholder="https://github.com/...">
-            </div>
-            <div class="input-group">
-                <label>Commande Éditeur (ex: code, cursor, vscodium)</label>
-                <input type="text" id="project-editor-input" placeholder="code" value="code">
-            </div>
-            <div class="input-group">
-                <label>Notes du projet (TODOs, Rappels...)</label>
-                <textarea id="project-notes-input" placeholder="Points clés du projet..."></textarea>
-            </div>
-            <div class="modal-actions">
-                <button class="text-btn" id="cancel-project">Annuler</button>
-                <button class="primary-btn" id="confirm-project">Ajouter le projet</button>
+
+            <div class="detail-body">
+                <div class="detail-main-actions">
+                    <button class="detail-action-btn" id="detail-open-folder">
+                        <span class="btn-icon">📁</span>
+                        <div class="btn-text">
+                            <strong>Dossier</strong>
+                            <span>Ouvrir dans l'explorateur</span>
+                        </div>
+                    </button>
+                    <button class="detail-action-btn" id="detail-open-terminal">
+                        <span class="btn-icon">💻</span>
+                        <div class="btn-text">
+                            <strong>Terminal</strong>
+                            <span>Ouvrir un CMD ici</span>
+                        </div>
+                    </button>
+                    <button class="detail-action-btn" id="detail-open-vscode">
+                        <span class="btn-icon">⚡</span>
+                        <div class="btn-text">
+                            <strong id="detail-editor-name">VS Code</strong>
+                            <span>Lancer l'éditeur</span>
+                        </div>
+                    </button>
+                    <button class="detail-action-btn hidden" id="detail-open-git">
+                        <span class="btn-icon">📦</span>
+                        <div class="btn-text">
+                            <strong>Repository</strong>
+                            <span>Voir sur Git</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Notes</h4>
+                    <div id="detail-notes" class="detail-notes-box"></div>
+                </div>
+
+                <div class="detail-section" id="detail-scripts-container">
+                    <h4>Scripts NPM</h4>
+                    <div id="detail-scripts-list" class="scripts-grid"></div>
+                </div>
             </div>
         </div>
     </div>
