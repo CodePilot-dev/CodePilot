@@ -206,6 +206,16 @@
                 <label>Description</label>
                 <textarea id="update-desc-input" style="height: 80px;"></textarea>
             </div>
+            <div style="display: flex; gap: 15px;">
+                <div class="input-group" style="flex: 1;">
+                    <label>Date & Heure</label>
+                    <input type="datetime-local" id="update-date-input">
+                </div>
+                <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-top: 25px;">
+                    <input type="checkbox" id="update-status-input" style="width: auto;">
+                    <label style="margin: 0;">Déjà terminé</label>
+                </div>
+            </div>
             <div class="modal-actions">
                 <button class="text-btn" id="cancel-update">Annuler</button>
                 <button class="primary-btn" id="confirm-update">Programmer</button>

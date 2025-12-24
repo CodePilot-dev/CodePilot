@@ -415,6 +415,8 @@ textarea:focus {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+    padding-right: 110px;
+    /* Space for absolute header buttons */
 }
 
 .project-title-row h3 {
@@ -456,6 +458,11 @@ textarea:focus {
     font-size: 0.75rem;
     color: var(--text-dim);
     transition: color 0.3s;
+    padding-right: 110px;
+    /* Space for absolute header buttons */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .project-card:hover .project-info p {
@@ -841,6 +848,22 @@ textarea:focus {
     color: #38bdf8;
     padding: 2px 6px;
     border-radius: 4px;
+    cursor: pointer;
+}
+
+.update-status-tag.finished {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.update-item-mini.finished {
+    border-left-color: var(--success);
+    opacity: 0.7;
+}
+
+.update-item-mini.finished h5 {
+    text-decoration: line-through;
+    color: var(--text-muted);
 }
 
 .detail-col-side p {

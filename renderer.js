@@ -249,15 +249,27 @@ function renderProjectUpdates() {
 
     updates.sort((a, b) => b.id - a.id).forEach(update => {
         const item = document.createElement('div');
-        item.className = 'update-item-mini';
+        const isFinished = update.status === 'finished';
+        item.className = `update-item-mini ${isFinished ? 'finished' : ''}`;
+
+        const dateStr = update.scheduledDate ? new Date(update.scheduledDate).toLocaleString() : new Date(update.id).toLocaleDateString();
+
         item.innerHTML = `
             <div class="update-header">
                 <h5>${update.title}</h5>
-                <span class="update-status-tag">À venir</span>
+                <span class="update-status-tag ${isFinished ? 'finished' : ''}">${isFinished ? 'Terminé' : 'À venir'}</span>
             </div>
             <p>${update.description}</p>
-            <span class="update-date">Prévu le ${new Date(update.id).toLocaleDateString()}</span>
+            <span class="update-date">${isFinished ? 'Terminé le' : 'Prévu le'} ${dateStr}</span>
         `;
+
+        item.querySelector('.update-status-tag').onclick = (e) => {
+            e.stopPropagation();
+            update.status = update.status === 'finished' ? 'pending' : 'finished';
+            save();
+            renderProjectUpdates();
+        };
+
         detailUpdatesList.appendChild(item);
     });
 }
@@ -385,7 +397,14 @@ function setupEventListeners() {
         projectModal.classList.remove('hidden');
     };
 
-    addProjectUpdateBtn.onclick = () => updateModal.classList.remove('hidden');
+    addProjectUpdateBtn.onclick = () => {
+        // Pre-fill date with current locale time
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('update-date-input').value = now.toISOString().slice(0, 16);
+        document.getElementById('update-status-input').checked = false;
+        updateModal.classList.remove('hidden');
+    };
 
     createReleaseBtn.onclick = () => {
         document.getElementById('release-project-name').textContent = `Projet : ${currentDetailProject.name}`;
@@ -451,15 +470,24 @@ function setupEventListeners() {
     document.getElementById('confirm-update').onclick = () => {
         const title = document.getElementById('update-title-input').value.trim();
         const description = document.getElementById('update-desc-input').value.trim();
+        const scheduledDate = document.getElementById('update-date-input').value;
+        const isFinished = document.getElementById('update-status-input').checked;
+
         if (title && description && currentDetailProject) {
             if (!currentDetailProject.updates) currentDetailProject.updates = [];
-            currentDetailProject.updates.push({ id: Date.now(), title, description });
+            currentDetailProject.updates.push({
+                id: Date.now(),
+                title,
+                description,
+                scheduledDate,
+                status: isFinished ? 'finished' : 'pending'
+            });
             save();
             renderProjectUpdates();
             updateModal.classList.add('hidden');
             document.getElementById('update-title-input').value = '';
             document.getElementById('update-desc-input').value = '';
-            showToast("MAJ programmée !", `Pour ${currentDetailProject.name}`);
+            showToast(isFinished ? "MAJ Terminée !" : "MAJ programmée !", `Pour ${currentDetailProject.name}`);
         }
     };
 
