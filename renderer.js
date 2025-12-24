@@ -1,10 +1,12 @@
 // State Management
 let config = {
     spaces: [{ id: 'default', name: 'Général', projects: [] }],
+    updates: [],
     activeSpaceId: 'default'
 };
 let editingProjectId = null;
 let currentDetailProject = null;
+let activeView = 'projects'; // 'projects' or 'updates'
 
 // DOM Elements
 const spacesList = document.getElementById('spaces-list');
@@ -13,13 +15,18 @@ const currentSpaceName = document.getElementById('current-space-name');
 const projectsCount = document.getElementById('projects-count');
 const emptyState = document.getElementById('empty-state');
 const projectSearch = document.getElementById('project-search');
+const updatesView = document.getElementById('updates-view');
+const updatesList = document.getElementById('updates-list');
+const showUpdatesBtn = document.getElementById('show-updates-btn');
 
 // Modals
 const spaceModal = document.getElementById('space-modal');
 const projectModal = document.getElementById('project-modal');
 const detailModal = document.getElementById('project-detail-modal');
+const updateModal = document.getElementById('update-modal');
 const addSpaceBtn = document.getElementById('add-space-btn');
 const addProjectBtn = document.getElementById('add-project-btn');
+const addUpdateBtn = document.getElementById('add-update-btn');
 
 // Detail Elements
 const detailName = document.getElementById('detail-name');
@@ -35,10 +42,23 @@ async function init() {
     if (savedConfig) {
         config = savedConfig;
         if (!config.activeSpaceId) config.activeSpaceId = config.spaces[0].id;
+        if (!config.updates) config.updates = [];
     }
     renderSpaces();
-    renderProjects();
+    renderMainView();
     setupEventListeners();
+}
+
+function renderMainView() {
+    if (activeView === 'projects') {
+        projectsGrid.classList.remove('hidden');
+        updatesView.classList.add('hidden');
+        renderProjects();
+    } else {
+        projectsGrid.classList.add('hidden');
+        updatesView.classList.remove('hidden');
+        renderUpdates();
+    }
 }
 
 // Rendering
@@ -47,18 +67,19 @@ function renderSpaces() {
 
     // Add "Tous les projets" entry
     const allItem = document.createElement('div');
-    allItem.className = `nav-item ${config.activeSpaceId === 'all' ? 'active' : ''}`;
+    allItem.className = `nav-item ${config.activeSpaceId === 'all' && activeView === 'projects' ? 'active' : ''}`;
     allItem.innerHTML = `<span>🚀 Tous les projets</span>`;
     allItem.onclick = () => {
         config.activeSpaceId = 'all';
+        activeView = 'projects';
         renderSpaces();
-        renderProjects();
+        renderMainView();
     };
     spacesList.appendChild(allItem);
 
     config.spaces.forEach(space => {
         const item = document.createElement('div');
-        item.className = `nav-item ${space.id === config.activeSpaceId ? 'active' : ''}`;
+        item.className = `nav-item ${space.id === config.activeSpaceId && activeView === 'projects' ? 'active' : ''}`;
         item.innerHTML = `
             <span>${space.name}</span>
             ${space.id !== 'default' ? `<span class="delete-space" data-id="${space.id}">✕</span>` : ''}
@@ -68,8 +89,9 @@ function renderSpaces() {
                 deleteSpace(space.id);
             } else {
                 config.activeSpaceId = space.id;
+                activeView = 'projects';
                 renderSpaces();
-                renderProjects();
+                renderMainView();
                 save();
             }
         };
@@ -269,9 +291,58 @@ function closeProjectModal() {
     document.getElementById('project-modal-title').textContent = 'Nouveau Projet';
 }
 
+// Update View Logic
+function renderUpdates() {
+    currentSpaceName.textContent = "Mises à jour prévues";
+    projectsCount.textContent = `${config.updates.length} prévue${config.updates.length > 1 ? 's' : ''}`;
+    updatesList.innerHTML = '';
+    emptyState.classList.add('hidden');
+
+    config.updates.sort((a, b) => b.id - a.id).forEach(update => {
+        const item = document.createElement('div');
+        item.className = 'update-item planned';
+        item.innerHTML = `
+            <div class="update-header">
+                <h4>${update.title}</h4>
+                <span class="update-status">À Venir</span>
+            </div>
+            <p>${update.description}</p>
+            <div class="update-meta">
+                <small>Programmé le ${new Date(update.id).toLocaleDateString()}</small>
+            </div>
+        `;
+        updatesList.appendChild(item);
+    });
+}
+
+function showToast(title, message) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+        <div class="toast-icon">🚀</div>
+        <div class="toast-content">
+            <h5>${title}</h5>
+            <p>${message}</p>
+        </div>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
+
 // Event Listeners Setup
 function setupEventListeners() {
     projectSearch.oninput = () => renderProjects();
+
+    showUpdatesBtn.onclick = () => {
+        activeView = 'updates';
+        config.activeSpaceId = null;
+        renderSpaces();
+        renderMainView();
+    };
+
+    addUpdateBtn.onclick = () => updateModal.classList.remove('hidden');
+
     addSpaceBtn.onclick = () => spaceModal.classList.remove('hidden');
     addProjectBtn.onclick = () => {
         editingProjectId = null;
@@ -286,7 +357,22 @@ function setupEventListeners() {
 
     document.getElementById('cancel-space').onclick = () => spaceModal.classList.add('hidden');
     document.getElementById('cancel-project').onclick = () => projectModal.classList.add('hidden');
+    document.getElementById('cancel-update').onclick = () => updateModal.classList.add('hidden');
     document.getElementById('close-detail').onclick = () => detailModal.classList.add('hidden');
+
+    document.getElementById('confirm-update').onclick = () => {
+        const title = document.getElementById('update-title-input').value.trim();
+        const description = document.getElementById('update-desc-input').value.trim();
+        if (title && description) {
+            config.updates.push({ id: Date.now(), title, description });
+            save();
+            renderUpdates();
+            updateModal.classList.add('hidden');
+            document.getElementById('update-title-input').value = '';
+            document.getElementById('update-desc-input').value = '';
+            showToast("Mise à jour programmée !", title);
+        }
+    };
 
     // Detail Actions
     document.getElementById('detail-open-folder').onclick = () => window.electronAPI.openFolder(currentDetailProject.path);
