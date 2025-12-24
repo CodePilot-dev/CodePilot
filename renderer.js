@@ -368,8 +368,74 @@ function detectFramework(pkg) {
     return null;
 }
 
+
+// Tag Management Functions
+function renderTagSelector() {
+    const container = document.getElementById('project-tag-selector');
+    container.innerHTML = '';
+    config.settings.globalTags.forEach(tag => {
+        const chip = document.createElement('div');
+        const isSelected = selectedProjectTags.includes(tag.id);
+        chip.className = `tag-chip ${isSelected ? 'selected' : ''}`;
+        chip.style.setProperty('--tag-color', tag.color);
+        chip.textContent = tag.name;
+        chip.onclick = () => {
+            if (selectedProjectTags.includes(tag.id)) {
+                selectedProjectTags = selectedProjectTags.filter(id => id !== tag.id);
+            } else {
+                selectedProjectTags.push(tag.id);
+            }
+            renderTagSelector();
+        };
+        container.appendChild(chip);
+    });
+}
+
+function renderGlobalTagsManager() {
+    const container = document.getElementById('manage-tags-list');
+    container.innerHTML = '';
+    config.settings.globalTags.forEach(tag => {
+        const item = document.createElement('div');
+        item.className = 'tag-manager-item';
+        item.innerHTML = `
+            <input type="text" value="${tag.name}" data-id="${tag.id}" class="tag-name-edit">
+            <input type="color" value="${tag.color}" data-id="${tag.id}" class="tag-color-edit">
+            <button class="icon-btn-small delete-global-tag" data-id="${tag.id}">✕</button>
+        `;
+        container.appendChild(item);
+    });
+
+    // Listeners for edits
+    container.querySelectorAll('.tag-name-edit').forEach(input => {
+        input.onblur = (e) => {
+            const tag = config.settings.globalTags.find(t => t.id === e.target.dataset.id);
+            if (tag) {
+                tag.name = e.target.value;
+                save();
+            }
+        };
+    });
+    container.querySelectorAll('.tag-color-edit').forEach(input => {
+        input.onchange = (e) => {
+            const tag = config.settings.globalTags.find(t => t.id === e.target.dataset.id);
+            if (tag) {
+                tag.color = e.target.value;
+                save();
+            }
+        };
+    });
+    container.querySelectorAll('.delete-global-tag').forEach(btn => {
+        btn.onclick = (e) => {
+            config.settings.globalTags = config.settings.globalTags.filter(t => t.id !== e.target.dataset.id);
+            renderGlobalTagsManager();
+            save();
+        };
+    });
+}
+
 function openEditModal(project) {
     editingProjectId = project.id;
+    selectedProjectTags = [...(project.tags || [])];
     document.getElementById('project-modal-title').textContent = 'Modifier le Projet';
     document.getElementById('project-name-input').value = project.name;
     document.getElementById('project-path-input').value = project.path;
@@ -377,6 +443,7 @@ function openEditModal(project) {
     document.getElementById('project-editor-input').value = project.editor || 'code';
     document.getElementById('project-notes-input').value = project.notes || '';
     document.getElementById('confirm-project').textContent = 'Enregistrer';
+    renderTagSelector();
     projectModal.classList.remove('hidden');
 }
 
@@ -388,7 +455,14 @@ function setupEventListeners() {
         document.getElementById('github-token-input').value = config.settings.githubToken || '';
         document.getElementById('gitlab-token-input').value = config.settings.gitlabToken || '';
         document.getElementById('current-theme-name').textContent = config.settings.theme ? (config.settings.theme.name || 'Thème personnalisé') : 'Thème par défaut';
+        renderGlobalTagsManager();
         settingsModal.classList.remove('hidden');
+    };
+
+    document.getElementById('add-global-tag-btn').onclick = () => {
+        config.settings.globalTags.push({ id: Date.now().toString(), name: 'Nouvelle étiquette', color: '#8b5cf6' });
+        renderGlobalTagsManager();
+        save();
     };
 
     document.getElementById('load-theme-btn').onclick = async () => {
@@ -420,12 +494,14 @@ function setupEventListeners() {
     addSpaceBtn.onclick = () => spaceModal.classList.remove('hidden');
     addProjectBtn.onclick = () => {
         editingProjectId = null;
+        selectedProjectTags = [];
         document.getElementById('project-name-input').value = '';
         document.getElementById('project-path-input').value = '';
         document.getElementById('project-repo-input').value = '';
         document.getElementById('project-editor-input').value = 'code';
         document.getElementById('project-notes-input').value = '';
         document.getElementById('confirm-project').textContent = 'Ajouter le projet';
+        renderTagSelector();
         projectModal.classList.remove('hidden');
     };
 
@@ -557,18 +633,29 @@ function setupEventListeners() {
         const notes = document.getElementById('project-notes-input').value.trim();
 
         if (name && path) {
+            const projectData = {
+                name, path, repoUrl, editor, notes,
+                tags: selectedProjectTags
+            };
+
             if (editingProjectId) {
                 config.spaces.forEach(s => {
                     const p = s.projects.find(proj => proj.id === editingProjectId);
                     if (p) {
-                        p.name = name; p.path = path; p.repoUrl = repoUrl;
-                        p.editor = editor; p.notes = notes;
+                        Object.assign(p, projectData);
                     }
                 });
             } else {
                 const spaceId = config.activeSpaceId === 'all' ? 'default' : config.activeSpaceId;
                 const space = config.spaces.find(s => s.id === spaceId);
-                if (space) space.projects.push({ id: Date.now().toString(), name, path, repoUrl, editor, notes, pinned: false, updates: [] });
+                if (space) {
+                    space.projects.push({
+                        id: Date.now().toString(),
+                        ...projectData,
+                        pinned: false,
+                        updates: []
+                    });
+                }
             }
             renderProjects();
             save();
