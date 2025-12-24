@@ -61,15 +61,16 @@ async function renderProjects() {
 
     currentSpaceName.textContent = activeSpace.name;
 
-    let projects = activeSpace.projects;
-    const searchTerm = projectSearch.value.toLowerCase();
-
     if (searchTerm) {
         projects = projects.filter(p =>
             p.name.toLowerCase().includes(searchTerm) ||
-            p.path.toLowerCase().includes(searchTerm)
+            p.path.toLowerCase().includes(searchTerm) ||
+            (p.notes && p.notes.toLowerCase().includes(searchTerm))
         );
     }
+
+    // Sort: Pinned first
+    projects.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
 
     projectsCount.textContent = `${projects.length} projet${projects.length > 1 ? 's' : ''}`;
     projectsGrid.innerHTML = '';
@@ -87,20 +88,28 @@ async function renderProjects() {
 
 async function createProjectCard(project) {
     const card = document.createElement('div');
-    card.className = 'project-card';
+    card.className = `project-card ${project.pinned ? 'pinned' : ''}`;
 
-    // Fetch package.json info for scripts
+    // Fetch package.json info for scripts and framework detection
     const pkg = await window.electronAPI.readPackageJson(project.path);
     const scripts = pkg && pkg.scripts ? Object.keys(pkg.scripts) : [];
+    const framework = detectFramework(pkg);
 
     card.innerHTML = `
         <div class="project-card-header">
+            <button class="pin-project ${project.pinned ? 'active' : ''}" title="${project.pinned ? 'Désépingler' : 'Épingler'}">
+                ${project.pinned ? '★' : '☆'}
+            </button>
             <button class="edit-project" title="Modifier le projet">✎</button>
             <button class="delete-project" title="Supprimer le projet">✕</button>
         </div>
         <div class="project-info">
-            <h3>${project.name} ${project.repoUrl ? '🔗' : ''}</h3>
+            <div class="project-title-row">
+                <h3>${project.name} ${project.repoUrl ? '🔗' : ''}</h3>
+                ${framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : ''}
+            </div>
             <div class="project-path">${project.path}</div>
+            ${project.notes ? `<div class="project-notes">${project.notes}</div>` : ''}
         </div>
         <div class="project-actions">
             <button class="action-btn" data-action="folder">
@@ -139,6 +148,11 @@ async function createProjectCard(project) {
     card.querySelector('.edit-project').onclick = (e) => {
         e.stopPropagation();
         openEditModal(project);
+    };
+
+    card.querySelector('.pin-project').onclick = (e) => {
+        e.stopPropagation();
+        togglePin(project.id);
     };
 
     card.querySelectorAll('.action-btn').forEach(btn => {
@@ -191,6 +205,31 @@ function deleteProject(id) {
     }
 }
 
+function togglePin(id) {
+    const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
+    const project = activeSpace.projects.find(p => p.id === id);
+    if (project) {
+        project.pinned = !project.pinned;
+        renderProjects();
+        save();
+    }
+}
+
+function detectFramework(pkg) {
+    if (!pkg) return null;
+    const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+
+    if (allDeps['next']) return { id: 'next', name: 'Next.js' };
+    if (allDeps['react']) return { id: 'react', name: 'React' };
+    if (allDeps['vue']) return { id: 'vue', name: 'Vue' };
+    if (allDeps['svelte']) return { id: 'svelte', name: 'Svelte' };
+    if (allDeps['electron']) return { id: 'electron', name: 'Electron' };
+    if (allDeps['vite']) return { id: 'vite', name: 'Vite' };
+    if (allDeps['typescript']) return { id: 'ts', name: 'TS' };
+
+    return null;
+}
+
 function openEditModal(project) {
     editingProjectId = project.id;
     document.getElementById('project-modal-title').textContent = 'Modifier le Projet';
@@ -198,6 +237,7 @@ function openEditModal(project) {
     document.getElementById('project-path-input').value = project.path;
     document.getElementById('project-repo-input').value = project.repoUrl || '';
     document.getElementById('project-editor-input').value = project.editor || 'code';
+    document.getElementById('project-notes-input').value = project.notes || '';
     document.getElementById('confirm-project').textContent = 'Enregistrer';
     projectModal.classList.remove('hidden');
 }
@@ -210,6 +250,7 @@ function closeProjectModal() {
     document.getElementById('project-path-input').value = '';
     document.getElementById('project-repo-input').value = '';
     document.getElementById('project-editor-input').value = 'code';
+    document.getElementById('project-notes-input').value = '';
     document.getElementById('confirm-project').textContent = 'Ajouter le projet';
 }
 
@@ -266,6 +307,7 @@ function setupEventListeners() {
         const path = document.getElementById('project-path-input').value.trim();
         const repoUrl = document.getElementById('project-repo-input').value.trim();
         const editor = document.getElementById('project-editor-input').value.trim() || 'code';
+        const notes = document.getElementById('project-notes-input').value.trim();
 
         if (name && path) {
             const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
@@ -277,6 +319,7 @@ function setupEventListeners() {
                     project.path = path;
                     project.repoUrl = repoUrl;
                     project.editor = editor;
+                    project.notes = notes;
                 }
             } else {
                 activeSpace.projects.push({
@@ -284,7 +327,9 @@ function setupEventListeners() {
                     name,
                     path,
                     repoUrl,
-                    editor
+                    editor,
+                    notes,
+                    pinned: false
                 });
             }
 

@@ -301,14 +301,25 @@ body {
     opacity: 1;
 }
 
+.project-card.pinned {
+    border-color: rgba(139, 92, 246, 0.5);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(139, 92, 246, 0.05));
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.project-card.pinned::before {
+    background: var(--accent);
+    opacity: 0.5;
+}
+
 .project-card-header {
     position: absolute;
     top: 15px;
     right: 15px;
     display: flex;
-    gap: 10px;
+    gap: 8px;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
     z-index: 10;
 }
 
@@ -316,6 +327,7 @@ body {
     opacity: 1;
 }
 
+.pin-project,
 .edit-project,
 .delete-project {
     background: transparent;
@@ -323,11 +335,18 @@ body {
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s;
-    padding: 5px;
+    padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.pin-project:hover,
+.pin-project.active {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
 }
 
 .edit-project:hover {
@@ -340,21 +359,82 @@ body {
     background: rgba(244, 63, 94, 0.1);
 }
 
-.project-info h3 {
-    margin-bottom: 5px;
-    font-size: 1.1rem;
+.project-title-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-right: 60px;
-    /* Space for action icons */
+    margin-bottom: 8px;
+    padding-right: 80px;
+}
+
+.fw-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fw-badge.next {
+    background: #000;
+    color: #fff;
+    border: 1px solid var(--border);
+}
+
+.fw-badge.react {
+    background: rgba(97, 218, 251, 0.2);
+    color: #61dafb;
+}
+
+.fw-badge.vue {
+    background: rgba(66, 184, 131, 0.2);
+    color: #42b883;
+}
+
+.fw-badge.svelte {
+    background: rgba(255, 62, 0, 0.2);
+    color: #ff3e00;
+}
+
+.fw-badge.electron {
+    background: rgba(159, 234, 249, 0.2);
+    color: #9feaf9;
+}
+
+.fw-badge.vite {
+    background: rgba(139, 92, 246, 0.2);
+    color: #a855f7;
+}
+
+.fw-badge.ts {
+    background: rgba(49, 120, 198, 0.2);
+    color: #3178c6;
+}
+
+.project-notes {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 12px 0 20px;
+    border-left: 2px solid var(--border);
+    white-space: pre-wrap;
+}
+
+.project-info h3 {
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .project-path {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: rgba(148, 163, 184, 0.6);
     font-family: 'JetBrains Mono', monospace;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -472,18 +552,28 @@ body {
     margin-bottom: 8px;
 }
 
-.input-group input {
+.input-group input,
+.input-group textarea {
     width: 100%;
     background: rgba(15, 23, 42, 0.5);
     border: 1px solid var(--border);
     padding: 12px;
     border-radius: 8px;
     color: white;
+    transition: all 0.2s;
 }
 
-.input-group input:focus {
+.input-group textarea {
+    height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
     outline: none;
     border-color: var(--primary);
+    background: rgba(15, 23, 42, 0.8);
 }
 
 .file-input-wrapper {
