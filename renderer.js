@@ -4,7 +4,8 @@ let config = {
     activeSpaceId: 'default',
     settings: {
         githubToken: '',
-        gitlabToken: ''
+        gitlabToken: '',
+        theme: null // Custom .thmx data
     }
 };
 let editingProjectId = null;
@@ -52,7 +53,17 @@ async function init() {
     }
     renderSpaces();
     renderProjects();
+    if (config.settings.theme) applyTheme(config.settings.theme);
     setupEventListeners();
+}
+
+function applyTheme(theme) {
+    if (!theme || !theme.colors) return;
+    const root = document.documentElement;
+    Object.entries(theme.colors).forEach(([prop, value]) => {
+        root.style.setProperty(prop, value);
+    });
+    document.getElementById('current-theme-name').textContent = theme.name || 'Thème personnalisé';
 }
 
 // Rendering
@@ -323,7 +334,34 @@ function setupEventListeners() {
     showSettingsBtn.onclick = () => {
         document.getElementById('github-token-input').value = config.settings.githubToken || '';
         document.getElementById('gitlab-token-input').value = config.settings.gitlabToken || '';
+        document.getElementById('current-theme-name').textContent = config.settings.theme ? (config.settings.theme.name || 'Thème personnalisé') : 'Thème par défaut';
         settingsModal.classList.remove('hidden');
+    };
+
+    document.getElementById('load-theme-btn').onclick = async () => {
+        const filePath = await window.electronAPI.selectFile([{ name: 'App Theme', extensions: ['thmx'] }]);
+        if (filePath) {
+            try {
+                const content = await window.electronAPI.readFile(filePath);
+                const theme = JSON.parse(content);
+                if (theme && theme.colors) {
+                    config.settings.theme = theme;
+                    applyTheme(theme);
+                    save();
+                    showToast("Thème chargé", `Le thème "${theme.name || 'Custom'}" a été appliqué.`);
+                }
+            } catch (e) {
+                alert("Erreur lors de la lecture du thème : " + e.message);
+            }
+        }
+    };
+
+    document.getElementById('reset-theme-btn').onclick = () => {
+        config.settings.theme = null;
+        document.documentElement.removeAttribute('style');
+        document.getElementById('current-theme-name').textContent = 'Thème par défaut';
+        save();
+        showToast("Thème réinitialisé", "Retour au design original.");
     };
 
     addSpaceBtn.onclick = () => spaceModal.classList.remove('hidden');

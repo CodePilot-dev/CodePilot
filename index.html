@@ -266,6 +266,18 @@
                 <input type="password" id="gitlab-token-input" placeholder="glpat-...">
             </div>
 
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+            <div class="input-group">
+                <label>Thème personnalisé (.thmx)</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                    <button class="secondary-btn" id="load-theme-btn" style="flex: 1;">Charger un thème</button>
+                    <button class="text-btn" id="reset-theme-btn" style="font-size: 0.7rem;">Réinitialiser</button>
+                </div>
+                <p id="current-theme-name" style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">Thème
+                    par défaut</p>
+            </div>
+
             <div class="modal-actions">
                 <button class="text-btn" id="cancel-settings">Fermer</button>
                 <button class="primary-btn" id="confirm-settings">Sauvegarder</button>
