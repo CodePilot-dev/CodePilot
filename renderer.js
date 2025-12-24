@@ -1,12 +1,10 @@
 // State Management
 let config = {
     spaces: [{ id: 'default', name: 'Général', projects: [] }],
-    updates: [],
     activeSpaceId: 'default'
 };
 let editingProjectId = null;
 let currentDetailProject = null;
-let activeView = 'projects'; // 'projects' or 'updates'
 
 // DOM Elements
 const spacesList = document.getElementById('spaces-list');
@@ -15,9 +13,6 @@ const currentSpaceName = document.getElementById('current-space-name');
 const projectsCount = document.getElementById('projects-count');
 const emptyState = document.getElementById('empty-state');
 const projectSearch = document.getElementById('project-search');
-const updatesView = document.getElementById('updates-view');
-const updatesList = document.getElementById('updates-list');
-const showUpdatesBtn = document.getElementById('show-updates-btn');
 
 // Modals
 const spaceModal = document.getElementById('space-modal');
@@ -26,7 +21,7 @@ const detailModal = document.getElementById('project-detail-modal');
 const updateModal = document.getElementById('update-modal');
 const addSpaceBtn = document.getElementById('add-space-btn');
 const addProjectBtn = document.getElementById('add-project-btn');
-const addUpdateBtn = document.getElementById('add-update-btn');
+const addProjectUpdateBtn = document.getElementById('add-project-update-btn');
 
 // Detail Elements
 const detailName = document.getElementById('detail-name');
@@ -34,6 +29,7 @@ const detailPath = document.getElementById('detail-path');
 const detailBadges = document.getElementById('detail-badges');
 const detailNotes = document.getElementById('detail-notes');
 const detailScriptsList = document.getElementById('detail-scripts-list');
+const detailUpdatesList = document.getElementById('detail-updates-list');
 const detailEditorName = document.getElementById('detail-editor-name');
 
 // Initialize
@@ -42,44 +38,30 @@ async function init() {
     if (savedConfig) {
         config = savedConfig;
         if (!config.activeSpaceId) config.activeSpaceId = config.spaces[0].id;
-        if (!config.updates) config.updates = [];
     }
     renderSpaces();
-    renderMainView();
+    renderProjects();
     setupEventListeners();
-}
-
-function renderMainView() {
-    if (activeView === 'projects') {
-        projectsGrid.classList.remove('hidden');
-        updatesView.classList.add('hidden');
-        renderProjects();
-    } else {
-        projectsGrid.classList.add('hidden');
-        updatesView.classList.remove('hidden');
-        renderUpdates();
-    }
 }
 
 // Rendering
 function renderSpaces() {
     spacesList.innerHTML = '';
 
-    // Add "Tous les projets" entry
     const allItem = document.createElement('div');
-    allItem.className = `nav-item ${config.activeSpaceId === 'all' && activeView === 'projects' ? 'active' : ''}`;
+    allItem.className = `nav-item ${config.activeSpaceId === 'all' ? 'active' : ''}`;
     allItem.innerHTML = `<span>🚀 Tous les projets</span>`;
     allItem.onclick = () => {
         config.activeSpaceId = 'all';
-        activeView = 'projects';
         renderSpaces();
-        renderMainView();
+        renderProjects();
+        save();
     };
     spacesList.appendChild(allItem);
 
     config.spaces.forEach(space => {
         const item = document.createElement('div');
-        item.className = `nav-item ${space.id === config.activeSpaceId && activeView === 'projects' ? 'active' : ''}`;
+        item.className = `nav-item ${space.id === config.activeSpaceId ? 'active' : ''}`;
         item.innerHTML = `
             <span>${space.name}</span>
             ${space.id !== 'default' ? `<span class="delete-space" data-id="${space.id}">✕</span>` : ''}
@@ -89,9 +71,8 @@ function renderSpaces() {
                 deleteSpace(space.id);
             } else {
                 config.activeSpaceId = space.id;
-                activeView = 'projects';
                 renderSpaces();
-                renderMainView();
+                renderProjects();
                 save();
             }
         };
@@ -106,9 +87,13 @@ async function renderProjects() {
         projects = config.spaces.flatMap(s => s.projects);
     } else {
         const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
-        if (!activeSpace) return;
-        currentSpaceName.textContent = activeSpace.name;
-        projects = activeSpace.projects;
+        if (!activeSpace) {
+            currentSpaceName.textContent = "Tous les projets";
+            projects = config.spaces.flatMap(s => s.projects);
+        } else {
+            currentSpaceName.textContent = activeSpace.name;
+            projects = activeSpace.projects;
+        }
     }
 
     const searchTerm = projectSearch.value.toLowerCase();
@@ -120,9 +105,7 @@ async function renderProjects() {
         );
     }
 
-    // Sort: Pinned first
     projects.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
-
     projectsCount.textContent = `${projects.length} projet${projects.length > 1 ? 's' : ''}`;
     projectsGrid.innerHTML = '';
 
@@ -160,11 +143,8 @@ async function createProjectCard(project) {
         </div>
     `;
 
-    // Click on card to open detail
     card.onclick = (e) => {
-        if (!e.target.closest('.project-card-header')) {
-            openDetailModal(project);
-        }
+        if (!e.target.closest('.project-card-header')) openDetailModal(project);
     };
 
     card.querySelector('.delete-project').onclick = (e) => {
@@ -193,12 +173,10 @@ async function openDetailModal(project) {
     detailNotes.textContent = project.notes || 'Aucune note pour ce projet.';
     detailEditorName.textContent = project.editor || 'VS Code';
 
-    // Framework Badge in detail
     const pkg = await window.electronAPI.readPackageJson(project.path);
     const framework = detectFramework(pkg);
     detailBadges.innerHTML = framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : '';
 
-    // NPM Scripts
     const scripts = pkg && pkg.scripts ? Object.keys(pkg.scripts) : [];
     detailScriptsList.innerHTML = '';
     if (scripts.length > 0) {
@@ -214,7 +192,8 @@ async function openDetailModal(project) {
         document.getElementById('detail-scripts-container').classList.add('hidden');
     }
 
-    // Git Repo
+    renderProjectUpdates();
+
     const gitBtn = document.getElementById('detail-open-git');
     if (project.repoUrl) {
         gitBtn.classList.remove('hidden');
@@ -224,6 +203,45 @@ async function openDetailModal(project) {
     }
 
     detailModal.classList.remove('hidden');
+}
+
+function renderProjectUpdates() {
+    detailUpdatesList.innerHTML = '';
+    const updates = currentDetailProject.updates || [];
+
+    if (updates.length === 0) {
+        detailUpdatesList.innerHTML = '<p class="text-muted" style="font-size: 0.8rem;">Aucune mise à jour programmée.</p>';
+        return;
+    }
+
+    updates.sort((a, b) => b.id - a.id).forEach(update => {
+        const item = document.createElement('div');
+        item.className = 'update-item-mini';
+        item.innerHTML = `
+            <div class="update-header">
+                <h5>${update.title}</h5>
+                <span class="update-status-tag">À venir</span>
+            </div>
+            <p>${update.description}</p>
+            <span class="update-date">Prévu le ${new Date(update.id).toLocaleDateString()}</span>
+        `;
+        detailUpdatesList.appendChild(item);
+    });
+}
+
+function showToast(title, message) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+        <div class="toast-icon">🚀</div>
+        <div class="toast-content">
+            <h5>${title}</h5>
+            <p>${message}</p>
+        </div>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
 }
 
 // Actions
@@ -285,64 +303,9 @@ function openEditModal(project) {
     projectModal.classList.remove('hidden');
 }
 
-function closeProjectModal() {
-    projectModal.classList.add('hidden');
-    editingProjectId = null;
-    document.getElementById('project-modal-title').textContent = 'Nouveau Projet';
-}
-
-// Update View Logic
-function renderUpdates() {
-    currentSpaceName.textContent = "Mises à jour prévues";
-    projectsCount.textContent = `${config.updates.length} prévue${config.updates.length > 1 ? 's' : ''}`;
-    updatesList.innerHTML = '';
-    emptyState.classList.add('hidden');
-
-    config.updates.sort((a, b) => b.id - a.id).forEach(update => {
-        const item = document.createElement('div');
-        item.className = 'update-item planned';
-        item.innerHTML = `
-            <div class="update-header">
-                <h4>${update.title}</h4>
-                <span class="update-status">À Venir</span>
-            </div>
-            <p>${update.description}</p>
-            <div class="update-meta">
-                <small>Programmé le ${new Date(update.id).toLocaleDateString()}</small>
-            </div>
-        `;
-        updatesList.appendChild(item);
-    });
-}
-
-function showToast(title, message) {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = `
-        <div class="toast-icon">🚀</div>
-        <div class="toast-content">
-            <h5>${title}</h5>
-            <p>${message}</p>
-        </div>
-    `;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 5000);
-}
-
-// Event Listeners Setup
+// Event Listeners
 function setupEventListeners() {
     projectSearch.oninput = () => renderProjects();
-
-    showUpdatesBtn.onclick = () => {
-        activeView = 'updates';
-        config.activeSpaceId = null;
-        renderSpaces();
-        renderMainView();
-    };
-
-    addUpdateBtn.onclick = () => updateModal.classList.remove('hidden');
-
     addSpaceBtn.onclick = () => spaceModal.classList.remove('hidden');
     addProjectBtn.onclick = () => {
         editingProjectId = null;
@@ -355,6 +318,8 @@ function setupEventListeners() {
         projectModal.classList.remove('hidden');
     };
 
+    addProjectUpdateBtn.onclick = () => updateModal.classList.remove('hidden');
+
     document.getElementById('cancel-space').onclick = () => spaceModal.classList.add('hidden');
     document.getElementById('cancel-project').onclick = () => projectModal.classList.add('hidden');
     document.getElementById('cancel-update').onclick = () => updateModal.classList.add('hidden');
@@ -363,23 +328,22 @@ function setupEventListeners() {
     document.getElementById('confirm-update').onclick = () => {
         const title = document.getElementById('update-title-input').value.trim();
         const description = document.getElementById('update-desc-input').value.trim();
-        if (title && description) {
-            config.updates.push({ id: Date.now(), title, description });
+        if (title && description && currentDetailProject) {
+            if (!currentDetailProject.updates) currentDetailProject.updates = [];
+            currentDetailProject.updates.push({ id: Date.now(), title, description });
             save();
-            renderUpdates();
+            renderProjectUpdates();
             updateModal.classList.add('hidden');
             document.getElementById('update-title-input').value = '';
             document.getElementById('update-desc-input').value = '';
-            showToast("Mise à jour programmée !", title);
+            showToast("MAJ programmée !", `Pour ${currentDetailProject.name}`);
         }
     };
 
-    // Detail Actions
     document.getElementById('detail-open-folder').onclick = () => window.electronAPI.openFolder(currentDetailProject.path);
     document.getElementById('detail-open-terminal').onclick = () => window.electronAPI.openTerminal(currentDetailProject.path);
     document.getElementById('detail-open-vscode').onclick = () => window.electronAPI.openVSCode({
-        path: currentDetailProject.path,
-        command: currentDetailProject.editor || 'code'
+        path: currentDetailProject.path, command: currentDetailProject.editor || 'code'
     });
 
     document.getElementById('confirm-space').onclick = () => {
@@ -412,17 +376,16 @@ function setupEventListeners() {
         if (name && path) {
             if (editingProjectId) {
                 config.spaces.forEach(s => {
-                    const project = s.projects.find(p => p.id === editingProjectId);
-                    if (project) {
-                        project.name = name; project.path = path;
-                        project.repoUrl = repoUrl; project.editor = editor;
-                        project.notes = notes;
+                    const p = s.projects.find(proj => proj.id === editingProjectId);
+                    if (p) {
+                        p.name = name; p.path = path; p.repoUrl = repoUrl;
+                        p.editor = editor; p.notes = notes;
                     }
                 });
             } else {
                 const spaceId = config.activeSpaceId === 'all' ? 'default' : config.activeSpaceId;
                 const space = config.spaces.find(s => s.id === spaceId);
-                space.projects.push({ id: Date.now().toString(), name, path, repoUrl, editor, notes, pinned: false });
+                if (space) space.projects.push({ id: Date.now().toString(), name, path, repoUrl, editor, notes, pinned: false, updates: [] });
             }
             renderProjects();
             save();
