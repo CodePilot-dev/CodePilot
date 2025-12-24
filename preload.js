@@ -13,4 +13,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     close: () => ipcRenderer.invoke('window-close'),
     getConfig: () => ipcRenderer.invoke('get-config'),
     saveConfig: (config) => ipcRenderer.invoke('save-config', config),
+    createRelease: (data) => ipcRenderer.invoke('create-release', data),
 });
