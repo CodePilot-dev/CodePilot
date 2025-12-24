@@ -273,10 +273,14 @@ body {
     backdrop-filter: blur(10px);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 15px 20px;
     transition: all 0.3s;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .project-card:hover {
@@ -314,10 +318,10 @@ body {
 
 .project-card-header {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 10px;
+    right: 10px;
     display: flex;
-    gap: 8px;
+    gap: 5px;
     opacity: 0;
     transition: all 0.2s;
     z-index: 10;
@@ -335,12 +339,12 @@ body {
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s;
-    padding: 6px;
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 .pin-project:hover,
@@ -363,17 +367,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
-    padding-right: 80px;
+    gap: 10px;
 }
 
 .fw-badge {
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .fw-badge.next {
@@ -424,10 +426,12 @@ body {
 }
 
 .project-info h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text-main);
 }
 
 .project-path {
