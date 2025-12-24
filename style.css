@@ -711,6 +711,85 @@ body {
     margin-bottom: 30px;
 }
 
+.detail-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.detail-section-header h4 {
+    margin-bottom: 0 !important;
+}
+
+.icon-btn-small {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    color: var(--primary);
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.icon-btn-small:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.update-list-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.update-item-mini {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.update-item-mini .update-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.update-item-mini h5 {
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.update-item-mini p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.update-item-mini .update-date {
+    font-size: 0.65rem;
+    color: rgba(148, 163, 184, 0.4);
+    margin-top: 8px;
+    display: block;
+}
+
+.update-status-tag {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--primary);
+}
+
 /* Update Management */
 .sidebar-footer {
     padding: 15px;
