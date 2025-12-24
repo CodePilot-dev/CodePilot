@@ -2,19 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.5] - 2025-12-24
-
-### Added
-- **Mises à jour par Projet** : Le système de programmation de MAJ est désormais intégré à chaque Hub Projet. Suivez la roadmap spécifique de chaque projet individuellement.
-- **Notifications Toast Contextuelles** : Les notifications confirment désormais le projet ciblé ("MAJ programmée pour [Nom du Projet]").
+## [0.0.6] - 2025-12-24
 
 ### Fixed
-- **Alignement Définitif des Badges** : Les étiquettes de frameworks sont désormais parfaitement alignées sur le bord droit de chaque carte projet.
-- **Correction des Doublons JS** : Nettoyage du code pour éviter les erreurs de redéclaration de variables.
+- **Refonte Architecturale** : Migration du système de mises à jour global vers un système **par projet**. Chaque projet gère désormais sa propre roadmap indépendamment.
+- **Persistence des Données** : Correction de la sauvegarde des MAJ dans le fichier de configuration pour chaque entrée projet.
+- **Intégration Hub** : Inclusion de la gestion des MAJ directement dans la vue détail (Hub Projet).
 
-### UI/UX
-- Nouveau bouton "+" dans le Hub Projet pour programmer une MAJ rapidement.
-- Affichage compact des MAJ prévues dans la vue détail.
+### Added
+- **Système de Toast** : Notifications de confirmation lors de la programmation d'une mise à jour.
+
+## [0.0.5] - 2025-12-24
+
+### Fixed
+- **Alignement des Badges** : Correction de l'étiquette Next.js qui ne se calait pas correctement à droite des cartes projets.
+- **Z-Index** : Correction des problèmes de superposition.
 
 ## [0.0.4] - 2025-12-24
 
