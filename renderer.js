@@ -10,6 +10,14 @@ let config = {
 };
 let editingProjectId = null;
 let currentDetailProject = null;
+const APP_VERSION = '0.0.9';
+
+function truncatePath(path) {
+    if (!path) return '';
+    const parts = path.split(/[\\/]/);
+    if (parts.length <= 3) return path;
+    return parts[0] + '/.../' + parts.slice(-2).join('/');
+}
 
 // DOM Elements
 const spacesList = document.getElementById('spaces-list');
@@ -151,17 +159,18 @@ async function createProjectCard(project) {
 
     card.innerHTML = `
         <div class="project-card-header">
-            <button class="pin-project ${project.pinned ? 'active' : ''}" title="${project.pinned ? 'Désépingler' : 'Épingler'}">
+            <button class="card-action-btn pin-project ${project.pinned ? 'active' : ''}" title="${project.pinned ? 'Désépingler' : 'Épingler'}">
                 ${project.pinned ? '★' : '☆'}
             </button>
-            <button class="edit-project" title="Modifier le projet">✎</button>
-            <button class="delete-project" title="Supprimer le projet">✕</button>
+            <button class="card-action-btn edit-project" title="Modifier le projet">✎</button>
+            <button class="card-action-btn delete-project" title="Supprimer le projet">✕</button>
         </div>
         <div class="project-info">
             <div class="project-title-row">
                 <h3>${project.name}</h3>
                 ${framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : ''}
             </div>
+            <p>${truncatePath(project.path)}</p>
         </div>
     `;
 
