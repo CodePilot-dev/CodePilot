@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.7] - 2025-12-24
+
+### Added
+- **Dashboard Hub (Refonte Totale)** : Le Hub Projet est désormais organisé en deux colonnes pour une séparation claire entre l'action (Dossier, Terminal, IDE) et la technique (Scripts, Roadmap).
+- **Design Alpha (Elite Developer)** : Nouvelle charte graphique inspirée des meilleurs outils de dev (VS Code, Linear). Minimalisme extrême et hiérarchie de l'information renforcée.
+
+### Changed
+- **Cartes Projets Épurées** : Suppression du bruit visuel sur la page d'accueil. Les projets sont maintenant présentés de manière sobre avec des indicateurs de framework discrets.
+- **Micro-interactions** : Les actions secondaires (éditer, supprimer, épingler) sont désormais contextuelles et n'apparaissent qu'au survol des cartes.
+- **Typographie Technique** : Intégration massive de JetBrains Mono pour tous les chemins de fichiers et scripts NPM.
+
+### Fixed
+- **Optimisation du Layout** : Nettoyage complet du CSS et de la structure HTML pour supprimer les éléments redondants et améliorer les performances de rendu.
+
 ## [0.0.6] - 2025-12-24
 
 ### Fixed
