@@ -5,16 +5,16 @@ All notable changes to this project will be documented in this file.
 ## [0.0.5] - 2025-12-24
 
 ### Added
-- **Système de Programmation de Mises à jour** : Un nouveau tableau de bord interne pour prévoir, documenter et programmer les futures versions de CodePilot.
-- **Notifications Toast** : Système de notifications élégantes en bas à droite pour confirmer les actions (comme la programmation d'une MAJ).
+- **Mises à jour par Projet** : Le système de programmation de MAJ est désormais intégré à chaque Hub Projet. Suivez la roadmap spécifique de chaque projet individuellement.
+- **Notifications Toast Contextuelles** : Les notifications confirment désormais le projet ciblé ("MAJ programmée pour [Nom du Projet]").
 
 ### Fixed
-- **Alignement des Badges** : Correction majeure de l'étiquette Next.js (et autres frameworks) qui est désormais parfaitement calée à droite de la carte, avec une marge propre.
-- **Navigation Latérale** : Meilleure gestion des états actifs entre "Tous les projets", les Espaces et les "Mises à jour".
+- **Alignement Définitif des Badges** : Les étiquettes de frameworks sont désormais parfaitement alignées sur le bord droit de chaque carte projet.
+- **Correction des Doublons JS** : Nettoyage du code pour éviter les erreurs de redéclaration de variables.
 
 ### UI/UX
-- Ajout d'un footer dans la barre latérale pour accéder rapidement à la gestion des MAJ.
-- Amélioration de la lisibilité des titres de projets sur les cartes.
+- Nouveau bouton "+" dans le Hub Projet pour programmer une MAJ rapidement.
+- Affichage compact des MAJ prévues dans la vue détail.
 
 ## [0.0.4] - 2025-12-24
 
