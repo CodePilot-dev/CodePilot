@@ -1,7 +1,11 @@
 // State Management
 let config = {
     spaces: [{ id: 'default', name: 'Général', projects: [] }],
-    activeSpaceId: 'default'
+    activeSpaceId: 'default',
+    settings: {
+        githubToken: '',
+        gitlabToken: ''
+    }
 };
 let editingProjectId = null;
 let currentDetailProject = null;
@@ -19,9 +23,15 @@ const spaceModal = document.getElementById('space-modal');
 const projectModal = document.getElementById('project-modal');
 const detailModal = document.getElementById('project-detail-modal');
 const updateModal = document.getElementById('update-modal');
+const releaseModal = document.getElementById('release-modal');
+const settingsModal = document.getElementById('settings-modal');
+
+// Buttons
 const addSpaceBtn = document.getElementById('add-space-btn');
 const addProjectBtn = document.getElementById('add-project-btn');
 const addProjectUpdateBtn = document.getElementById('add-project-update-btn');
+const showSettingsBtn = document.getElementById('show-settings-btn');
+const createReleaseBtn = document.getElementById('detail-create-release');
 
 // Detail Elements
 const detailName = document.getElementById('detail-name');
@@ -38,6 +48,7 @@ async function init() {
     if (savedConfig) {
         config = savedConfig;
         if (!config.activeSpaceId) config.activeSpaceId = config.spaces[0].id;
+        if (!config.settings) config.settings = { githubToken: '', gitlabToken: '' };
     }
     renderSpaces();
     renderProjects();
@@ -198,8 +209,10 @@ async function openDetailModal(project) {
     if (project.repoUrl) {
         gitBtn.classList.remove('hidden');
         gitBtn.onclick = () => window.electronAPI.openExternal(project.repoUrl);
+        createReleaseBtn.classList.remove('hidden');
     } else {
         gitBtn.classList.add('hidden');
+        createReleaseBtn.classList.add('hidden');
     }
 
     detailModal.classList.remove('hidden');
@@ -306,6 +319,13 @@ function openEditModal(project) {
 // Event Listeners
 function setupEventListeners() {
     projectSearch.oninput = () => renderProjects();
+
+    showSettingsBtn.onclick = () => {
+        document.getElementById('github-token-input').value = config.settings.githubToken || '';
+        document.getElementById('gitlab-token-input').value = config.settings.gitlabToken || '';
+        settingsModal.classList.remove('hidden');
+    };
+
     addSpaceBtn.onclick = () => spaceModal.classList.remove('hidden');
     addProjectBtn.onclick = () => {
         editingProjectId = null;
@@ -320,10 +340,66 @@ function setupEventListeners() {
 
     addProjectUpdateBtn.onclick = () => updateModal.classList.remove('hidden');
 
+    createReleaseBtn.onclick = () => {
+        document.getElementById('release-project-name').textContent = `Projet : ${currentDetailProject.name}`;
+        document.getElementById('release-tag-input').value = '';
+        document.getElementById('release-title-input').value = '';
+        document.getElementById('release-body-input').value = '';
+        releaseModal.classList.remove('hidden');
+    };
+
     document.getElementById('cancel-space').onclick = () => spaceModal.classList.add('hidden');
     document.getElementById('cancel-project').onclick = () => projectModal.classList.add('hidden');
     document.getElementById('cancel-update').onclick = () => updateModal.classList.add('hidden');
+    document.getElementById('cancel-release').onclick = () => releaseModal.classList.add('hidden');
+    document.getElementById('cancel-settings').onclick = () => settingsModal.classList.add('hidden');
     document.getElementById('close-detail').onclick = () => detailModal.classList.add('hidden');
+
+    document.getElementById('confirm-settings').onclick = () => {
+        config.settings.githubToken = document.getElementById('github-token-input').value.trim();
+        config.settings.gitlabToken = document.getElementById('gitlab-token-input').value.trim();
+        save();
+        showToast("Configuration", "Jetons d'accès sauvegardés.");
+        settingsModal.classList.add('hidden');
+    };
+
+    document.getElementById('confirm-release').onclick = async () => {
+        const tag = document.getElementById('release-tag-input').value.trim();
+        const title = document.getElementById('release-title-input').value.trim();
+        const body = document.getElementById('release-body-input').value.trim();
+
+        if (!tag || !title) {
+            alert("Le tag et le titre sont obligatoires.");
+            return;
+        }
+
+        const confirmBtn = document.getElementById('confirm-release');
+        const originalText = confirmBtn.textContent;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Publication...";
+
+        try {
+            const result = await window.electronAPI.createRelease({
+                repoUrl: currentDetailProject.repoUrl,
+                tag,
+                title,
+                body,
+                tokens: config.settings
+            });
+
+            if (result.success) {
+                showToast("Release publiée !", `Version ${tag} déployée.`);
+                releaseModal.classList.add('hidden');
+            } else {
+                alert(`Erreur : ${result.error}`);
+            }
+        } catch (e) {
+            alert(`Erreur critique : ${e.message}`);
+        } finally {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = originalText;
+        }
+    };
 
     document.getElementById('confirm-update').onclick = () => {
         const title = document.getElementById('update-title-input').value.trim();

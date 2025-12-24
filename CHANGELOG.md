@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.8] - 2025-12-24
+
+### Added
+- **Gestionnaire de Releases (GitHub / GitLab)** : Crée des releases directement depuis le Hub Projet. Plus besoin d'ouvrir ton navigateur pour taguer une version.
+- **Support des API Tokens** : Ajout d'une section Configuration pour stocker tes jetons d'accès personnels (PAT) en toute sécurité.
+
+### UI/UX
+- Nouveau bouton "🚀 Release" dans la barre d'outils du Hub.
+- Formulaire dédié pour le nom du tag, le titre et les Release Notes (Markdown).
+- Notifications en temps réel sur le succès ou l'échec du déploiement.
+
+
 ## [0.0.7] - 2025-12-24
 
 ### Added
