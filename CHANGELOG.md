@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4] - 2025-12-24
+
+### Added
+- **Focus Mode & Hub Projet** : Refonte totale de la navigation. La page d'accueil affiche désormais une liste épurée de vos projets. Cliquez sur un projet pour ouvrir son "Hub" dédié.
+- **Vue "Tous les projets"** : Nouveau raccourci dans la barre latérale pour voir l'intégralité de vos projets en un seul coup d'œil, sans changer d'espace.
+
+### Changed
+- **Interface Épurée** : Les actions (Terminal, VS Code, Scripts) sont désormais masquées par défaut et centralisées dans la vue détail pour réduire le bruit visuel.
+- **Cartes Compactes** : Design miniaturisé des cartes projets sur l'accueil pour une meilleure gestion des larges volumes de projets.
+
+### Fixed
+- **Correction Overlap Badges** : Les badges de frameworks (Next.js, React, etc.) se décalent désormais dynamiquement au survol pour éviter tout chevauchement avec les icônes d'action (Épinglage, Édition, Suppression).
+- **Z-Index & Layers** : Amélioration de la superposition des éléments flottants sur les cartes.
+
 ## [0.0.2] - 2025-12-24
 
 ### Added
