@@ -40,11 +40,6 @@
                 <nav id="spaces-list" class="nav-list">
                     <!-- Spaces will be injected here -->
                 </nav>
-                <div class="sidebar-footer">
-                    <button id="show-updates-btn" class="update-btn-sidebar">
-                        <span>🔔</span> Mises à jour
-                    </button>
-                </div>
             </aside>
 
             <!-- Main Content for Projects -->
@@ -66,18 +61,6 @@
 
                 <div id="projects-grid" class="projects-grid">
                     <!-- Projects will be injected here -->
-                </div>
-
-                <!-- Updates View -->
-                <div id="updates-view" class="updates-view hidden">
-                    <div class="header-actions">
-                        <button id="add-update-btn" class="primary-btn add-update-btn">
-                            + Prévoir une mise à jour
-                        </button>
-                    </div>
-                    <div id="updates-list" class="update-list-container">
-                        <!-- Updates will be injected here -->
-                    </div>
                 </div>
 
                 <!-- Empty State -->
@@ -161,6 +144,14 @@
                 <div class="detail-section" id="detail-scripts-container">
                     <h4>Scripts NPM</h4>
                     <div id="detail-scripts-list" class="scripts-grid"></div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <h4>Mises à jour prévues</h4>
+                        <button id="add-project-update-btn" class="icon-btn-small" title="Programmer une MAJ">+</button>
+                    </div>
+                    <div id="detail-updates-list" class="update-list-mini"></div>
                 </div>
             </div>
         </div>
