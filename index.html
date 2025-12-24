@@ -91,65 +91,56 @@
             </div>
 
             <div class="detail-body">
-                <!-- Left Column: Primary Actions & Content -->
-                <div class="detail-main-content">
-                    <div class="detail-main-actions">
-                        <button class="detail-action-btn" id="detail-open-folder">
-                            <span class="btn-icon">📁</span>
-                            <div class="btn-text">
-                                <strong>Dossier</strong>
-                                <span>Explorer les fichiers</span>
-                            </div>
-                        </button>
-                        <button class="detail-action-btn" id="detail-open-terminal">
-                            <span class="btn-icon">💻</span>
-                            <div class="btn-text">
-                                <strong>Terminal</strong>
-                                <span>Lancer la console</span>
-                            </div>
-                        </button>
-                        <button class="detail-action-btn" id="detail-open-vscode">
-                            <span class="btn-icon">⚡</span>
-                            <div class="btn-text">
-                                <strong id="detail-editor-name">VS Code</strong>
-                                <span>Ouvrir l'IDE</span>
-                            </div>
-                        </button>
-                        <button class="detail-action-btn" id="detail-create-release">
-                            <span class="btn-icon">🚀</span>
-                            <div class="btn-text">
-                                <strong>Release</strong>
-                                <span>Taguer sur Git</span>
-                            </div>
-                        </button>
-                        <button class="detail-action-btn hidden" id="detail-open-git">
-                            <span class="btn-icon">📦</span>
-                            <div class="btn-text">
-                                <strong>Git Repo</strong>
-                                <span>Voir sur le cloud</span>
-                            </div>
-                        </button>
-                    </div>
-
-                    <div class="detail-section">
-                        <h4>Notes & Memo</h4>
-                        <div id="detail-notes" class="detail-notes-box"></div>
-                    </div>
+                <!-- Top Toolbar: Quick Actions -->
+                <div class="detail-toolbar">
+                    <button class="tool-btn" id="detail-open-vscode">
+                        <span class="btn-icon">⚡</span>
+                        <span>Ouvrir</span>
+                    </button>
+                    <button class="tool-btn" id="detail-open-terminal">
+                        <span class="btn-icon">💻</span>
+                        <span>Terminal</span>
+                    </button>
+                    <button class="tool-btn" id="detail-open-folder">
+                        <span class="btn-icon">📁</span>
+                        <span>Dossier</span>
+                    </button>
+                    <div class="v-divider"></div>
+                    <button class="tool-btn" id="detail-create-release">
+                        <span class="btn-icon">🚀</span>
+                        <span>Release</span>
+                    </button>
+                    <button class="tool-btn hidden" id="detail-open-git">
+                        <span class="btn-icon">📦</span>
+                        <span>Repo</span>
+                    </button>
                 </div>
 
-                <!-- Right Column: Secondary Info -->
-                <div class="detail-sidebar">
-                    <div class="detail-section" id="detail-scripts-container">
-                        <h4>Scripts NPM</h4>
-                        <div id="detail-scripts-list" class="scripts-grid"></div>
+                <!-- Main Grid Layout -->
+                <div class="detail-dashboard">
+                    <!-- Left: Scripts & Notes -->
+                    <div class="detail-col-main">
+                        <div class="detail-block" id="detail-scripts-container">
+                            <h4>⚡ Scripts NPM</h4>
+                            <div id="detail-scripts-list" class="scripts-grid-modern"></div>
+                        </div>
+
+                        <div class="detail-block">
+                            <h4>📝 Notes & Mémo</h4>
+                            <div id="detail-notes" class="detail-notes-box"></div>
+                        </div>
                     </div>
 
-                    <div class="detail-section">
-                        <div class="detail-section-header">
-                            <h4>Roadmap / Updates</h4>
-                            <button id="add-project-update-btn" class="icon-btn-small">+</button>
+                    <!-- Right: Updates & Roadmap -->
+                    <div class="detail-col-side">
+                        <div class="detail-block">
+                            <div class="detail-section-header">
+                                <h4>📅 Roadmap</h4>
+                                <button id="add-project-update-btn" class="icon-btn-small"
+                                    title="Ajouter une étape">+</button>
+                            </div>
+                            <div id="detail-updates-list" class="update-list-mini"></div>
                         </div>
-                        <div id="detail-updates-list" class="update-list-mini"></div>
                     </div>
                 </div>
             </div>
