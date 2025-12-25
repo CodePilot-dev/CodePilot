@@ -94,6 +94,15 @@ async function init() {
     applyPersonalization();
     checkForUpdates();
     setupEventListeners();
+
+    // Global Shortcuts
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            const searchInput = document.getElementById('project-search');
+            if (searchInput) searchInput.focus();
+        }
+    });
 }
 
 function applyPersonalization() {

@@ -319,6 +319,12 @@ textarea:focus {
     align-items: flex-end;
 }
 
+.header-right {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
 .header-left h1 {
     font-size: 3rem;
     font-weight: 800;
@@ -1293,6 +1299,7 @@ textarea:focus {
 .icon-btn-text:hover {
     opacity: 1;
 }
+
 /* Settings Personalization Addons */
 .settings-scroll-area {
     max-height: 65vh;
@@ -1355,7 +1362,8 @@ textarea:focus {
     cursor: pointer;
 }
 
-#setting-font-family, #setting-animations {
+#setting-font-family,
+#setting-animations {
     width: 100%;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border);
@@ -1387,4 +1395,3 @@ body.compact .project-card {
 body.no-glow {
     background-image: none !important;
 }
-
