@@ -63,7 +63,16 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
-// IPC Handlers
+ipcMain.handle('get-app-version', () => {
+    try {
+        const pkgPath = path.join(__dirname, 'package.json');
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+        return pkg.version;
+    } catch (e) {
+        return '0.0.0';
+    }
+});
+
 ipcMain.handle('select-folder', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
         properties: ['openDirectory'],

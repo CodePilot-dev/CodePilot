@@ -26,7 +26,7 @@ let config = {
 let editingProjectId = null;
 let currentDetailProject = null;
 let selectedProjectTags = []; // Temporary storage for modal
-const APP_VERSION = '0.1.1';
+let APP_VERSION = '0.0.0';
 
 function truncatePath(path) {
     if (!path) return '';
@@ -71,6 +71,11 @@ const detailOpenEditorText = document.getElementById('detail-open-editor-text');
 
 // Initialize
 async function init() {
+    // Fetch version from package.json automatically
+    APP_VERSION = await window.electronAPI.getAppVersion();
+    const versionDisplay = document.getElementById('app-version-display');
+    if (versionDisplay) versionDisplay.textContent = `v${APP_VERSION}`;
+
     const savedConfig = await window.electronAPI.getConfig();
     if (savedConfig) {
         config = savedConfig;
@@ -120,12 +125,26 @@ async function checkForUpdates(manual = false) {
         const latest = result.version;
         const current = APP_VERSION;
 
-        if (latest !== current && !manual) {
+        // Simple semantic version comparison: 0.1.3 -> [0, 1, 3]
+        const latestParts = latest.split('.').map(Number);
+        const currentParts = current.split('.').map(Number);
+
+        let isNewer = false;
+        for (let i = 0; i < 3; i++) {
+            if (latestParts[i] > currentParts[i]) {
+                isNewer = true;
+                break;
+            } else if (latestParts[i] < currentParts[i]) {
+                break;
+            }
+        }
+
+        if (isNewer && !manual) {
             showToast("Mise à jour disponible", `La version ${latest} est disponible ! Cliquez pour l'installer.`, () => {
                 startUpdate();
             });
         } else if (manual) {
-            if (latest !== current) {
+            if (isNewer) {
                 if (confirm(`Une nouvelle version (${latest}) est disponible. Voulez-vous l'installer maintenant ? L'application redémarrera.`)) {
                     startUpdate();
                 }
@@ -670,7 +689,9 @@ function setupEventListeners() {
         document.getElementById('setting-glass-blur').value = p.glassBlur || 10;
         document.getElementById('setting-border-radius').value = p.borderRadius || 12;
         document.getElementById('setting-card-size').value = p.cardSize || 280;
-        document.getElementById('setting-animations').value = p.animationLevel || 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        const animEl = document.getElementById('setting-animations');
+        if (animEl) animEl.value = p.animationLevel || 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+
         document.getElementById('setting-sidebar-opacity').value = p.sidebarOpacity || 80;
         document.getElementById('setting-bg-glow').checked = p.bgGlow !== false;
         document.getElementById('setting-compact-mode').checked = !!p.compactMode;
