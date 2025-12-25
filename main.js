@@ -65,7 +65,8 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('get-app-version', () => {
     try {
-        const pkgPath = path.join(__dirname, 'package.json');
+        const appDir = getAppDir() || __dirname;
+        const pkgPath = path.join(appDir, 'package.json');
         const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
         return pkg.version;
     } catch (e) {
