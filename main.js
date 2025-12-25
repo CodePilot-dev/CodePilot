@@ -190,11 +190,18 @@ ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, toke
 
         else if (cleanUrl.includes('gitlab.com')) {
             // Updated extraction for GitLab to handle dots and subgroups
-            // takes everything after gitlab.com/ until end or .git
+            // takes everything after gitlab.com/ until end
             const pathParts = cleanUrl.split('gitlab.com/');
             if (pathParts.length < 2) throw new Error("URL GitLab invalide");
 
             let fullPath = pathParts[1];
+
+            // Clean up common deep-link patterns if user pasted a link to a file/tree
+            fullPath = fullPath.split('/-/')[0];
+            fullPath = fullPath.split('/tree/')[0];
+            fullPath = fullPath.split('/blob/')[0];
+            fullPath = fullPath.split('/src/')[0];
+
             fullPath = fullPath.replace(/\.git$/, '').replace(/\/$/, ''); // Remove .git and trailing slash
             projectPath = encodeURIComponent(fullPath);
 
@@ -226,6 +233,10 @@ ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, toke
                                 if (json.error) errMsg += ` - ${json.error}`;
                             } catch (e) {
                                 errMsg += ` - ${resBody.substring(0, 100)}`;
+                            }
+                            // Add hint for 404
+                            if (res.statusCode === 404) {
+                                errMsg += ` (Projet introuvable : ${fullPath})`;
                             }
                             resolve({ success: false, error: errMsg });
                         }
