@@ -16,4 +16,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     createRelease: (data) => ipcRenderer.invoke('create-release', data),
     selectFile: (filters) => ipcRenderer.invoke('select-file', filters),
     readFile: (path) => ipcRenderer.invoke('read-file', path),
+    // Git API
+    checkGitRepo: (path) => ipcRenderer.invoke('check-git-repo', path),
+    gitStatus: (path) => ipcRenderer.invoke('git-status', path),
+    gitAdd: (data) => ipcRenderer.invoke('git-add', data),
+    gitCommit: (data) => ipcRenderer.invoke('git-commit', data),
+    gitPush: (path) => ipcRenderer.invoke('git-push', path),
+    gitPull: (path) => ipcRenderer.invoke('git-pull', path),
+    gitLog: (path) => ipcRenderer.invoke('git-log', path),
 });

@@ -114,6 +114,10 @@
                         <span class="btn-icon">📦</span>
                         <span>Repo</span>
                     </button>
+                    <button class="tool-btn hidden" id="detail-open-git-gui">
+                        <span class="btn-icon">🌿</span>
+                        <span>Git GUI</span>
+                    </button>
                 </div>
 
                 <!-- Main Grid Layout -->
@@ -253,6 +257,49 @@
             <div class="modal-actions">
                 <button class="text-btn" id="cancel-release">Annuler</button>
                 <button class="primary-btn" id="confirm-release">Publier</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="git-modal" class="modal hidden">
+        <div class="modal-content git-modal-content">
+            <div class="git-modal-header">
+                <h3>🌿 Interface Git</h3>
+                <span id="git-project-path" class="git-path-badge"></span>
+                <button class="close-btn-minimal" id="close-git-gui">✕</button>
+            </div>
+
+            <div class="git-layout">
+                <div class="git-sidebar">
+                    <div class="git-section">
+                        <div class="git-section-header">
+                            <h4>Changements</h4>
+                            <button class="icon-btn-text" id="git-refresh-btn">🔄</button>
+                        </div>
+                        <div id="git-changes-list" class="git-changes-list">
+                            <!-- Files here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="git-main">
+                    <div class="git-actions-top">
+                        <button class="secondary-btn-small" id="git-pull-btn">⬇️ Pull</button>
+                        <button class="secondary-btn-small" id="git-push-btn">⬆️ Push</button>
+                    </div>
+
+                    <div class="git-commit-box">
+                        <textarea id="git-commit-message" placeholder="Message du commit..."></textarea>
+                        <button class="primary-btn" id="git-commit-btn">Valider le Commit</button>
+                    </div>
+
+                    <div class="git-history">
+                        <h4>Historique récent</h4>
+                        <div id="git-log-list" class="git-log-list">
+                            <!-- Logs here -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

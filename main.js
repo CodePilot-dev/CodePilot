@@ -179,6 +179,77 @@ ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, toke
     }
 });
 
+// Git GUI Handlers
+ipcMain.handle('check-git-repo', (event, projectPath) => {
+    return fs.existsSync(path.join(projectPath, '.git'));
+});
+
+ipcMain.handle('git-status', async (event, projectPath) => {
+    return new Promise((resolve) => {
+        exec('git status --porcelain', { cwd: projectPath }, (err, stdout) => {
+            if (err) return resolve({ success: false, error: err.message });
+            const files = stdout.split('\n').filter(line => line.trim()).map(line => {
+                const status = line.slice(0, 2).trim();
+                const file = line.slice(3);
+                return { status, file };
+            });
+            resolve({ success: true, files });
+        });
+    });
+});
+
+ipcMain.handle('git-add', async (event, { projectPath, files }) => {
+    const filesToStage = files.length === 0 ? '.' : files.join(' ');
+    return new Promise((resolve) => {
+        exec(`git add ${filesToStage}`, { cwd: projectPath }, (err) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true });
+        });
+    });
+});
+
+ipcMain.handle('git-commit', async (event, { projectPath, message }) => {
+    return new Promise((resolve) => {
+        exec(`git commit -m "${message.replace(/"/g, '\\"')}"`, { cwd: projectPath }, (err, stdout) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true, output: stdout });
+        });
+    });
+});
+
+ipcMain.handle('git-push', async (event, projectPath) => {
+    return new Promise((resolve) => {
+        exec('git push', { cwd: projectPath }, (err, stdout) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true, output: stdout });
+        });
+    });
+});
+
+ipcMain.handle('git-pull', async (event, projectPath) => {
+    return new Promise((resolve) => {
+        exec('git pull', { cwd: projectPath }, (err, stdout) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true, output: stdout });
+        });
+    });
+});
+
+ipcMain.handle('git-log', async (event, projectPath) => {
+    return new Promise((resolve) => {
+        exec('git log -n 10 --pretty=format:"%h|%an|%ar|%s"', { cwd: projectPath }, (err, stdout) => {
+            if (err) resolve({ success: false, error: err.message });
+            else {
+                const logs = stdout.split('\n').filter(l => l.trim()).map(line => {
+                    const [hash, author, date, subject] = line.split('|');
+                    return { hash, author, date, subject };
+                });
+                resolve({ success: true, logs });
+            }
+        });
+    });
+});
+
 // Window controls
 ipcMain.handle('window-minimize', () => mainWindow.minimize());
 ipcMain.handle('window-maximize', () => {
