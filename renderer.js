@@ -8,7 +8,19 @@ let config = {
         globalTags: [
             { id: '1', name: 'En cours', color: '#38bdf8' },
             { id: '2', name: 'Terminé', color: '#10b981' }
-        ]
+        ],
+        personalization: {
+            appName: 'CODEPILOT',
+            accentColor: '#8b5cf6',
+            fontFamily: "'Outfit', sans-serif",
+            glassBlur: 10,
+            borderRadius: 12,
+            cardSize: 280,
+            animationLevel: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            sidebarOpacity: 80,
+            bgGlow: true,
+            compactMode: false
+        }
     }
 };
 let editingProjectId = null;
@@ -74,7 +86,31 @@ async function init() {
     renderSpaces();
     renderProjects();
     if (config.settings.theme) applyTheme(config.settings.theme);
+    applyPersonalization();
     setupEventListeners();
+}
+
+function applyPersonalization() {
+    const p = config.settings.personalization || {};
+    const root = document.documentElement;
+
+    // Apply values to CSS variables
+    if (p.accentColor) root.style.setProperty('--primary', p.accentColor);
+    if (p.fontFamily) root.style.setProperty('--font-main', p.fontFamily);
+    if (p.glassBlur !== undefined) root.style.setProperty('--glass-blur', `${p.glassBlur}px`);
+    if (p.borderRadius !== undefined) root.style.setProperty('--radius', `${p.borderRadius}px`);
+    if (p.cardSize !== undefined) root.style.setProperty('--card-width', `${p.cardSize}px`);
+    if (p.animationLevel) root.style.setProperty('--anim-speed', p.animationLevel);
+    if (p.sidebarOpacity !== undefined) root.style.setProperty('--sidebar-opacity', p.sidebarOpacity / 100);
+
+    // Apply classes to body
+    document.body.classList.toggle('compact', !!p.compactMode);
+    document.body.classList.toggle('no-glow', !p.bgGlow);
+
+    // Apply App Name
+    const logo = document.querySelector('.logo');
+    if (logo) logo.textContent = p.appName || 'CODEPILOT';
+    document.title = p.appName || 'CodePilot';
 }
 
 function applyTheme(theme) {
@@ -534,7 +570,75 @@ function openEditModal(project) {
 function setupEventListeners() {
     projectSearch.oninput = () => renderProjects();
 
+    // Personalization Real-time Preview in Settings
+    const updatePreview = () => {
+        const p = {
+            appName: document.getElementById('setting-app-name').value || 'CODEPILOT',
+            accentColor: document.getElementById('setting-accent-color').value,
+            fontFamily: document.getElementById('setting-font-family').value,
+            glassBlur: parseInt(document.getElementById('setting-glass-blur').value),
+            borderRadius: parseInt(document.getElementById('setting-border-radius').value),
+            cardSize: parseInt(document.getElementById('setting-card-size').value),
+            animationLevel: document.getElementById('setting-animations').value,
+            sidebarOpacity: parseInt(document.getElementById('setting-sidebar-opacity').value),
+            bgGlow: document.getElementById('setting-bg-glow').checked,
+            compactMode: document.getElementById('setting-compact-mode').checked
+        };
+
+        // Update labels
+        document.getElementById('val-glass-blur').textContent = p.glassBlur;
+        document.getElementById('val-border-radius').textContent = p.borderRadius;
+        document.getElementById('val-card-size').textContent = p.cardSize;
+        document.getElementById('val-sidebar-opacity').textContent = p.sidebarOpacity;
+
+        // Apply temporarily (preview)
+        config.settings.personalization = p;
+        applyPersonalization();
+    };
+
+    const personalizationInputs = [
+        'setting-app-name', 'setting-accent-color', 'setting-font-family',
+        'setting-glass-blur', 'setting-border-radius', 'setting-card-size',
+        'setting-animations', 'setting-sidebar-opacity', 'setting-bg-glow',
+        'setting-compact-mode'
+    ];
+
+    personalizationInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.oninput = updatePreview;
+    });
+
     showSettingsBtn.onclick = () => {
+        const p = config.settings.personalization || {
+            appName: 'CODEPILOT',
+            accentColor: '#8b5cf6',
+            fontFamily: "'Outfit', sans-serif",
+            glassBlur: 10,
+            borderRadius: 12,
+            cardSize: 280,
+            animationLevel: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            sidebarOpacity: 80,
+            bgGlow: true,
+            compactMode: false
+        };
+
+        document.getElementById('setting-app-name').value = p.appName || '';
+        document.getElementById('setting-accent-color').value = p.accentColor || '#8b5cf6';
+        document.getElementById('setting-font-family').value = p.fontFamily || "'Outfit', sans-serif";
+        document.getElementById('setting-glass-blur').value = p.glassBlur || 10;
+        document.getElementById('setting-border-radius').value = p.borderRadius || 12;
+        document.getElementById('setting-card-size').value = p.cardSize || 280;
+        document.getElementById('setting-animations').value = p.animationLevel || 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        document.getElementById('setting-sidebar-opacity').value = p.sidebarOpacity || 80;
+        document.getElementById('setting-bg-glow').checked = p.bgGlow !== false;
+        document.getElementById('setting-compact-mode').checked = !!p.compactMode;
+
+        // Sync labels
+        document.getElementById('val-glass-blur').textContent = p.glassBlur || 10;
+        document.getElementById('val-border-radius').textContent = p.borderRadius || 12;
+        document.getElementById('val-card-size').textContent = p.cardSize || 280;
+        document.getElementById('val-sidebar-opacity').textContent = p.sidebarOpacity || 80;
+
         document.getElementById('github-token-input').value = config.settings.githubToken || '';
         document.getElementById('gitlab-token-input').value = config.settings.gitlabToken || '';
         document.getElementById('current-theme-name').textContent = config.settings.theme ? (config.settings.theme.name || 'Thème personnalisé') : 'Thème par défaut';

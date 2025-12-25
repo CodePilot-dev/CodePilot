@@ -332,13 +332,82 @@
 
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
 
-            <div class="input-group">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <label>Gestion des Étiquettes</label>
-                    <button class="icon-btn-small" id="add-global-tag-btn" title="Ajouter une étiquette">+</button>
+            <div class="settings-scroll-area">
+                <div class="settings-section">
+                    <h4>🎨 Personnalisation</h4>
+
+                    <div class="input-group">
+                        <label>Nom de l'application</label>
+                        <input type="text" id="setting-app-name" placeholder="CODEPILOT">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="input-group">
+                            <label>Couleur d'accent</label>
+                            <input type="color" id="setting-accent-color" value="#8b5cf6">
+                        </div>
+                        <div class="input-group">
+                            <label>Police principale</label>
+                            <select id="setting-font-family">
+                                <option value="'Outfit', sans-serif">Outfit (Moderne)</option>
+                                <option value="'JetBrains Mono', monospace">JetBrains (Code)</option>
+                                <option value="'Inter', sans-serif">Inter (Standard)</option>
+                                <option value="system-ui">Système</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Intensité du flou (Glassmorphism) : <span id="val-glass-blur">10</span>px</label>
+                        <input type="range" id="setting-glass-blur" min="0" max="40" value="10">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Arrondi des angles : <span id="val-border-radius">12</span>px</label>
+                        <input type="range" id="setting-border-radius" min="0" max="30" value="12">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Taille des cartes : <span id="val-card-size">280</span>px</label>
+                        <input type="range" id="setting-card-size" min="200" max="400" value="280">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Niveau d'animations</label>
+                        <select id="setting-animations">
+                            <option value="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)">Fluide</option>
+                            <option value="all 0.15s ease">Rapide</option>
+                            <option value="none">Aucune</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Opacité Sidebar : <span id="val-sidebar-opacity">100</span>%</label>
+                        <input type="range" id="setting-sidebar-opacity" min="50" max="100" value="100">
+                    </div>
+
+                    <div style="display: flex; gap: 20px; align-items: center; margin-top: 10px;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setting-bg-glow">
+                            <label for="setting-bg-glow">Lueur de fond</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setting-compact-mode">
+                            <label for="setting-compact-mode">Mode compact</label>
+                        </div>
+                    </div>
                 </div>
-                <div id="manage-tags-list" class="manage-tags-list">
-                    <!-- Global tags management here -->
+
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+                <div class="input-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label>Gestion des Étiquettes</label>
+                        <button class="icon-btn-small" id="add-global-tag-btn" title="Ajouter une étiquette">+</button>
+                    </div>
+                    <div id="manage-tags-list" class="manage-tags-list">
+                        <!-- Global tags management here -->
+                    </div>
                 </div>
             </div>
 
