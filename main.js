@@ -10,7 +10,18 @@ const __dirname = path.dirname(__filename);
 
 let mainWindow;
 
+// Determine where to load the app from (allow hot-updates in userData)
+function getAppDir() {
+    const updatePath = path.join(app.getPath('userData'), 'update');
+    // If update folder exists and has at least index.html, use it
+    if (fs.existsSync(path.join(updatePath, 'index.html'))) {
+        return updatePath;
+    }
+    return null;
+}
+
 function createWindow() {
+
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
@@ -20,7 +31,7 @@ function createWindow() {
         titleBarStyle: 'hidden',
         backgroundColor: '#0f172a',
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'preload.js'), // Preload always stays from root for security
             contextIsolation: true,
             nodeIntegration: false,
         },
@@ -29,7 +40,14 @@ function createWindow() {
     if (process.env.VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
     } else {
-        mainWindow.loadFile(path.join(__dirname, 'dist/index.html'));
+        const updateDir = getAppDir();
+        if (updateDir) {
+            // Load the updated version from userData
+            mainWindow.loadFile(path.join(updateDir, 'index.html'));
+        } else {
+            // Fallback to the original built version in dist/
+            mainWindow.loadFile(path.join(__dirname, 'dist/index.html'));
+        }
     }
 }
 
@@ -219,11 +237,15 @@ ipcMain.handle('check-updates', async () => {
 ipcMain.handle('download-update', async () => {
     const files = ['main.js', 'renderer.js', 'style.css', 'index.html', 'preload.js', 'package.json'];
     const baseUrl = 'https://raw.githubusercontent.com/CodePilot-dev/CodePilot/main/';
-    const projectDir = __dirname;
+    const updateDir = path.join(app.getPath('userData'), 'update');
 
     try {
+        if (!fs.existsSync(updateDir)) {
+            fs.mkdirSync(updateDir, { recursive: true });
+        }
+
         for (const file of files) {
-            const dest = path.join(projectDir, file);
+            const dest = path.join(updateDir, file);
             await new Promise((resolve, reject) => {
                 const fileReq = https.get(baseUrl + file, (res) => {
                     if (res.statusCode !== 200) {
