@@ -621,8 +621,8 @@ textarea:focus {
 
 /* Project Detail Modal - The HUB (Redesigned) */
 .modal-content.project-detail-view {
-    width: 85vw;
-    max-width: 800px;
+    width: 90vw;
+    max-width: 1000px;
     height: 75vh;
     max-height: 700px;
     padding: 0;
@@ -686,19 +686,20 @@ textarea:focus {
 .tool-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
+    gap: 6px;
+    padding: 8px 14px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text-main);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .tool-btn .btn-icon {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .tool-btn:hover {
