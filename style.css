@@ -1224,6 +1224,14 @@ textarea:focus {
     font-family: var(--font-mono);
     font-size: 0.85rem;
     resize: none;
+    user-select: text !important;
+    pointer-events: auto !important;
+    cursor: text !important;
+}
+
+.git-commit-box textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
 }
 
 .git-history {

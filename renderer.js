@@ -395,6 +395,14 @@ async function openDetailModal(project) {
 async function openGitModal(project) {
     document.getElementById('git-project-path').textContent = project.path;
     gitModal.classList.remove('hidden');
+
+    // Ensure textarea is accessible
+    const msgBox = document.getElementById('git-commit-message');
+    if (msgBox) {
+        msgBox.disabled = false;
+        setTimeout(() => msgBox.focus(), 100);
+    }
+
     await refreshGitStatus();
 }
 
