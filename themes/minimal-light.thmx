@@ -1,0 +1,42 @@
+{
+    "name": "Minimal Light",
+    "author": "CodePilot Team",
+    "description": "Thème clair et minimaliste pour une productivité maximale",
+    "version": "1.0.0",
+    
+    "colors": {
+        "--primary": "#3b82f6",
+        "--primary-dark": "#2563eb",
+        "--accent": "#8b5cf6",
+        "--bg-app": "#ffffff",
+        "--bg-sidebar": "#f8fafc",
+        "--bg-card": "rgba(241, 245, 249, 0.8)",
+        "--bg-hub": "#f8fafc",
+        "--border": "rgba(15, 23, 42, 0.1)",
+        "--text-main": "#0f172a",
+        "--text-muted": "#64748b",
+        "--danger": "#ef4444",
+        "--success": "#10b981"
+    },
+    
+    "typography": {
+        "--font-main": "'Inter', sans-serif"
+    },
+    
+    "dimensions": {
+        "--border-radius": "8px",
+        "--glass-blur": "5px",
+        "--card-size": "260px"
+    },
+    
+    "effects": {
+        "--transition": "all 0.2s ease",
+        "--sidebar-opacity": "0.95"
+    },
+    
+    "interface": {
+        "appName": "CODEPILOT",
+        "bgGlow": false,
+        "compactMode": true
+    }
+}

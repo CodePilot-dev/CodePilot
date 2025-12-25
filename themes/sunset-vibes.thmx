@@ -1,0 +1,31 @@
+{
+    "name": "Sunset Vibes",
+    "author": "Community",
+    "description": "Couleurs chaudes d'un coucher de soleil",
+    "version": "1.0.0",
+    
+    "colors": {
+        "--primary": "#f97316",
+        "--primary-dark": "#ea580c",
+        "--accent": "#fb923c",
+        "--bg-app": "#1c1917",
+        "--bg-sidebar": "#292524",
+        "--bg-card": "rgba(41, 37, 36, 0.7)",
+        "--bg-hub": "#292524",
+        "--border": "rgba(249, 115, 22, 0.2)",
+        "--text-main": "#fef3c7",
+        "--text-muted": "#fbbf24",
+        "--danger": "#dc2626",
+        "--success": "#84cc16"
+    },
+    
+    "dimensions": {
+        "--border-radius": "12px",
+        "--glass-blur": "12px"
+    },
+    
+    "interface": {
+        "appName": "☀️ CODEPILOT",
+        "bgGlow": true
+    }
+}

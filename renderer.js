@@ -179,12 +179,72 @@ async function startUpdate() {
 }
 
 function applyTheme(theme) {
-    if (!theme || !theme.colors) return;
+    if (!theme) return;
+
     const root = document.documentElement;
-    Object.entries(theme.colors).forEach(([prop, value]) => {
-        root.style.setProperty(prop, value);
-    });
-    document.getElementById('current-theme-name').textContent = theme.name || 'Thème personnalisé';
+
+    // Apply colors (existing functionality)
+    if (theme.colors) {
+        Object.entries(theme.colors).forEach(([prop, value]) => {
+            root.style.setProperty(prop, value);
+        });
+    }
+
+    // Apply typography
+    if (theme.typography) {
+        Object.entries(theme.typography).forEach(([prop, value]) => {
+            root.style.setProperty(prop, value);
+        });
+    }
+
+    // Apply dimensions
+    if (theme.dimensions) {
+        Object.entries(theme.dimensions).forEach(([prop, value]) => {
+            root.style.setProperty(prop, value);
+        });
+    }
+
+    // Apply effects
+    if (theme.effects) {
+        Object.entries(theme.effects).forEach(([prop, value]) => {
+            root.style.setProperty(prop, value);
+        });
+    }
+
+    // Apply interface settings
+    if (theme.interface) {
+        const iface = theme.interface;
+
+        // App name
+        if (iface.appName) {
+            const logo = document.querySelector('.logo');
+            if (logo) logo.textContent = iface.appName;
+            document.title = iface.appName;
+        }
+
+        // Background glow
+        if (iface.bgGlow !== undefined) {
+            document.body.classList.toggle('no-glow', !iface.bgGlow);
+        }
+
+        // Compact mode
+        if (iface.compactMode !== undefined) {
+            document.body.classList.toggle('compact', iface.compactMode);
+        }
+    }
+
+    // Display theme metadata
+    const themeName = theme.name || 'Thème personnalisé';
+    const themeInfo = theme.author ? `${themeName} par ${theme.author}` : themeName;
+    document.getElementById('current-theme-name').textContent = themeInfo;
+
+    // Optional: Log theme info to console for debugging
+    if (theme.version || theme.description) {
+        console.log(`🎨 Thème chargé: ${themeName}`);
+        if (theme.version) console.log(`   Version: ${theme.version}`);
+        if (theme.description) console.log(`   Description: ${theme.description}`);
+        if (theme.author) console.log(`   Auteur: ${theme.author}`);
+    }
 }
 
 // Rendering
@@ -758,14 +818,35 @@ function setupEventListeners() {
             try {
                 const content = await window.electronAPI.readFile(filePath);
                 const theme = JSON.parse(content);
-                if (theme && theme.colors) {
-                    config.settings.theme = theme;
-                    applyTheme(theme);
-                    save();
-                    showToast("Thème chargé", `Le thème "${theme.name || 'Custom'}" a été appliqué.`);
+
+                // Validate theme structure (at least one section must be present)
+                const hasValidSection = theme.colors || theme.typography || theme.dimensions ||
+                    theme.effects || theme.interface;
+
+                if (!theme.name) {
+                    throw new Error("Le thème doit avoir un nom (propriété 'name')");
                 }
+
+                if (!hasValidSection) {
+                    throw new Error("Le thème doit contenir au moins une section (colors, typography, dimensions, effects, ou interface)");
+                }
+
+                // Apply theme
+                config.settings.theme = theme;
+                applyTheme(theme);
+                save();
+
+                // Show success message with theme info
+                const themeInfo = theme.author ? `${theme.name} par ${theme.author}` : theme.name;
+                const description = theme.description ? `\n${theme.description}` : '';
+                showToast("✨ Thème chargé", `${themeInfo}${description}`);
+
             } catch (e) {
-                alert("Erreur lors de la lecture du thème : " + e.message);
+                if (e instanceof SyntaxError) {
+                    alert("❌ Erreur : Le fichier .thmx n'est pas un JSON valide.\n\n" + e.message);
+                } else {
+                    alert("❌ Erreur lors du chargement du thème :\n\n" + e.message);
+                }
             }
         }
     };
@@ -777,6 +858,91 @@ function setupEventListeners() {
         save();
         showToast("Thème réinitialisé", "Retour au design original.");
     };
+
+    document.getElementById('export-theme-btn').onclick = async () => {
+        // Prompt for theme metadata
+        const themeName = prompt("Nom du thème :", "Mon Thème Personnalisé");
+        if (!themeName) return;
+
+        const author = prompt("Auteur (optionnel) :", "");
+        const description = prompt("Description (optionnel) :", "");
+
+        // Get current CSS variables from root
+        const root = document.documentElement;
+        const computedStyle = getComputedStyle(root);
+
+        // Build theme object from current settings
+        const theme = {
+            name: themeName,
+            version: "1.0.0"
+        };
+
+        if (author) theme.author = author;
+        if (description) theme.description = description;
+
+        // Extract colors
+        const colorVars = [
+            '--primary', '--primary-dark', '--accent', '--bg-app',
+            '--bg-sidebar', '--bg-card', '--bg-hub', '--border',
+            '--text-main', '--text-muted', '--danger', '--success'
+        ];
+
+        theme.colors = {};
+        colorVars.forEach(varName => {
+            const value = computedStyle.getPropertyValue(varName).trim();
+            if (value) theme.colors[varName] = value;
+        });
+
+        // Extract typography
+        const typographyVars = ['--font-main', '--font-mono'];
+        const typography = {};
+        typographyVars.forEach(varName => {
+            const value = computedStyle.getPropertyValue(varName).trim();
+            if (value) typography[varName] = value;
+        });
+        if (Object.keys(typography).length > 0) theme.typography = typography;
+
+        // Extract dimensions
+        const dimensionVars = ['--card-size', '--border-radius', '--glass-blur'];
+        const dimensions = {};
+        dimensionVars.forEach(varName => {
+            const value = computedStyle.getPropertyValue(varName).trim();
+            if (value) dimensions[varName] = value;
+        });
+        if (Object.keys(dimensions).length > 0) theme.dimensions = dimensions;
+
+        // Extract effects
+        const effectVars = ['--transition', '--sidebar-opacity'];
+        const effects = {};
+        effectVars.forEach(varName => {
+            const value = computedStyle.getPropertyValue(varName).trim();
+            if (value) effects[varName] = value;
+        });
+        if (Object.keys(effects).length > 0) theme.effects = effects;
+
+        // Extract interface settings from personalization
+        const p = config.settings.personalization || {};
+        theme.interface = {
+            appName: p.appName || 'CODEPILOT',
+            bgGlow: p.bgGlow !== false,
+            compactMode: !!p.compactMode
+        };
+
+        // Save to file
+        const content = JSON.stringify(theme, null, 4);
+        const result = await window.electronAPI.saveFile({
+            defaultPath: `${themeName.toLowerCase().replace(/\s+/g, '-')}.thmx`,
+            filters: [{ name: 'Theme File', extensions: ['thmx'] }],
+            content: content
+        });
+
+        if (result.success) {
+            showToast("✨ Thème exporté", `Votre thème a été sauvegardé avec succès !`);
+        } else if (!result.cancelled) {
+            alert("❌ Erreur lors de l'export : " + result.error);
+        }
+    };
+
 
     addSpaceBtn.onclick = () => spaceModal.classList.remove('hidden');
     addProjectBtn.onclick = () => {

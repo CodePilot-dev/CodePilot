@@ -96,6 +96,24 @@ ipcMain.handle('read-file', (event, filePath) => {
     return null;
 });
 
+ipcMain.handle('save-file', async (event, { defaultPath, filters, content }) => {
+    const result = await dialog.showSaveDialog(mainWindow, {
+        defaultPath: defaultPath || 'theme.thmx',
+        filters: filters || [{ name: 'Theme File', extensions: ['thmx'] }]
+    });
+
+    if (result.filePath) {
+        try {
+            fs.writeFileSync(result.filePath, content, 'utf-8');
+            return { success: true, path: result.filePath };
+        } catch (e) {
+            return { success: false, error: e.message };
+        }
+    }
+    return { success: false, cancelled: true };
+});
+
+
 ipcMain.handle('read-package-json', (event, projectPath) => {
     const pkgPath = path.join(projectPath, 'package.json');
     if (fs.existsSync(pkgPath)) {

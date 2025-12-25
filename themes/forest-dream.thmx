@@ -1,0 +1,41 @@
+{
+    "name": "Forest Dream",
+    "author": "Community",
+    "description": "Des tons naturels apaisants inspirés de la forêt",
+    "version": "1.2.0",
+    
+    "colors": {
+        "--primary": "#10b981",
+        "--primary-dark": "#059669",
+        "--accent": "#34d399",
+        "--bg-app": "#0c1713",
+        "--bg-sidebar": "#1a2e23",
+        "--bg-card": "rgba(26, 46, 35, 0.6)",
+        "--bg-hub": "#1a2e23",
+        "--border": "rgba(16, 185, 129, 0.15)",
+        "--text-main": "#d1fae5",
+        "--text-muted": "#6ee7b7",
+        "--danger": "#f87171",
+        "--success": "#34d399"
+    },
+    
+    "typography": {
+        "--font-main": "'Outfit', sans-serif"
+    },
+    
+    "dimensions": {
+        "--border-radius": "16px",
+        "--glass-blur": "15px"
+    },
+    
+    "effects": {
+        "--transition": "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+        "--sidebar-opacity": "0.9"
+    },
+    
+    "interface": {
+        "appName": "🌲 CODEPILOT",
+        "bgGlow": true,
+        "compactMode": false
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "name": "Cyberpunk Neon",
+    "author": "CodePilot Team",
+    "description": "Un thème inspiré de l'univers cyberpunk avec des néons éclatants",
+    "version": "1.0.0",
+    
+    "colors": {
+        "--primary": "#00f0ff",
+        "--primary-dark": "#00d4e6",
+        "--accent": "#ff00aa",
+        "--bg-app": "#0a0e27",
+        "--bg-sidebar": "#1a1f3a",
+        "--bg-card": "rgba(26, 31, 58, 0.7)",
+        "--bg-hub": "#1a1f3a",
+        "--border": "rgba(0, 240, 255, 0.2)",
+        "--text-main": "#e0f7ff",
+        "--text-muted": "#7dd3fc",
+        "--danger": "#ff0055",
+        "--success": "#00ff88"
+    },
+    
+    "typography": {
+        "--font-main": "'JetBrains Mono', monospace"
+    },
+    
+    "dimensions": {
+        "--border-radius": "4px",
+        "--glass-blur": "20px"
+    },
+    
+    "effects": {
+        "--transition": "all 0.15s ease"
+    },
+    
+    "interface": {
+        "appName": "CODEPILOT//2077",
+        "bgGlow": true,
+        "compactMode": false
+    }
+}
