@@ -11,4 +11,3 @@
 
 ### 🛠️ Améliorations Techniques
 - **Correction de Bug** : Correction du bug où le bouton affichait systématiquement "Ouvrir VSCode" même si une autre application était configurée.
-
