@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     /* Core Palette - Deep Space & Neon */
     --bg-app: #05050a;
     --bg-sidebar: rgba(10, 10, 15, var(--sidebar-opacity, 0.6));
@@ -366,8 +366,8 @@ textarea:focus {
 /* Projects Grid */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--card-width, 280px), 1fr));
-    gap: var(--padding-base, 24px);
+    grid-template-columns: repeat(auto-fill, var(--card-width, 280px));
+    gap: 32px;
     padding-bottom: 40px;
 }
 
