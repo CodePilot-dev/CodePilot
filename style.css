@@ -557,12 +557,17 @@ textarea:focus {
     backdrop-filter: blur(var(--glass-blur, 10px));
     border: 1px solid var(--border-highlight);
     border-radius: var(--radius);
-    padding: 32px;
-    width: 450px;
+    padding: 30px;
+    width: 480px;
+    max-width: 90vw;
     position: relative;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     transform: scale(0.95);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), var(--anim-speed);
+}
+
+.modal-content.settings-large {
+    width: 850px;
 }
 
 .modal:not(.hidden) .modal-content {
@@ -1288,3 +1293,98 @@ textarea:focus {
 .icon-btn-text:hover {
     opacity: 1;
 }
+/* Settings Personalization Addons */
+.settings-scroll-area {
+    max-height: 65vh;
+    overflow-y: auto;
+    padding-right: 15px;
+    margin: 15px 0;
+}
+
+.settings-scroll-area::-webkit-scrollbar {
+    width: 4px;
+}
+
+.settings-scroll-area::-webkit-scrollbar-thumb {
+    background: var(--border-highlight);
+    border-radius: 4px;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.settings-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.settings-section h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--primary);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-group input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+}
+
+.checkbox-group label {
+    font-size: 0.85rem;
+    color: var(--text-main);
+    user-select: none;
+    cursor: pointer;
+}
+
+#setting-font-family, #setting-animations {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+    font-size: 0.85rem;
+}
+
+.input-group label span {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Compact Mode Support */
+body.compact {
+    --padding-base: 12px;
+}
+
+body.compact .content-header {
+    padding: 15px 25px;
+}
+
+body.compact .project-card {
+    padding: 16px;
+}
+
+/* Background Lueur Support */
+body.no-glow {
+    background-image: none !important;
+}
+
