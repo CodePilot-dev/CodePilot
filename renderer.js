@@ -38,6 +38,7 @@ const detailModal = document.getElementById('project-detail-modal');
 const updateModal = document.getElementById('update-modal');
 const releaseModal = document.getElementById('release-modal');
 const settingsModal = document.getElementById('settings-modal');
+const gitModal = document.getElementById('git-modal');
 
 // Buttons
 const addSpaceBtn = document.getElementById('add-space-btn');
@@ -267,6 +268,8 @@ async function openDetailModal(project) {
     renderProjectUpdates();
 
     const gitBtn = document.getElementById('detail-open-git');
+    const gitGuiBtn = document.getElementById('detail-open-git-gui');
+
     if (project.repoUrl) {
         gitBtn.classList.remove('hidden');
         gitBtn.onclick = () => window.electronAPI.openExternal(project.repoUrl);
@@ -276,7 +279,78 @@ async function openDetailModal(project) {
         createReleaseBtn.classList.add('hidden');
     }
 
+    // Check for local .git
+    const hasGit = await window.electronAPI.checkGitRepo(project.path);
+    if (hasGit) {
+        gitGuiBtn.classList.remove('hidden');
+    } else {
+        gitGuiBtn.classList.add('hidden');
+    }
+
     detailModal.classList.remove('hidden');
+}
+
+async function openGitModal(project) {
+    document.getElementById('git-project-path').textContent = project.path;
+    gitModal.classList.remove('hidden');
+    await refreshGitStatus();
+}
+
+async function refreshGitStatus() {
+    const projectPath = currentDetailProject.path;
+    const { success, files, error } = await window.electronAPI.gitStatus(projectPath);
+    const list = document.getElementById('git-changes-list');
+    list.innerHTML = '';
+
+    if (!success) {
+        list.innerHTML = `<p class="error-text">Erreur: ${error}</p>`;
+        return;
+    }
+
+    if (files.length === 0) {
+        list.innerHTML = '<p class="text-muted" style="font-size: 0.8rem; padding: 10px;">Aucun changement détecté.</p>';
+    } else {
+        files.forEach(file => {
+            const item = document.createElement('div');
+            item.className = 'git-change-item';
+            const statusClass = file.status === '??' ? 'U' : file.status;
+            item.innerHTML = `
+                <span class="git-status-icon ${statusClass}">${statusClass}</span>
+                <span style="flex:1; overflow:hidden; text-overflow:ellipsis;">${file.file}</span>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    await refreshGitLog();
+}
+
+async function refreshGitLog() {
+    const projectPath = currentDetailProject.path;
+    const { success, logs, error } = await window.electronAPI.gitLog(projectPath);
+    const list = document.getElementById('git-log-list');
+    list.innerHTML = '';
+
+    if (!success) {
+        list.innerHTML = `<p class="error-text">Erreur: ${error}</p>`;
+        return;
+    }
+
+    logs.forEach(log => {
+        const item = document.createElement('div');
+        item.className = 'git-log-item';
+        item.innerHTML = `
+            <div class="git-log-item-header">
+                <span class="git-log-hash">${log.hash}</span>
+                <span>${log.date}</span>
+            </div>
+            <div class="git-log-subject">${log.subject}</div>
+            <div class="git-log-item-header" style="margin-top: 5px; opacity: 0.5;">
+                <span>${log.author}</span>
+            </div>
+        `;
+        list.appendChild(item);
+    });
 }
 
 function renderProjectUpdates() {
@@ -606,6 +680,67 @@ function setupEventListeners() {
             document.getElementById('update-desc-input').value = '';
             showToast(isFinished ? "MAJ Terminée !" : "MAJ programmée !", `Pour ${currentDetailProject.name}`);
         }
+    };
+
+    document.getElementById('detail-open-git-gui').onclick = () => openGitModal(currentDetailProject);
+    document.getElementById('close-git-gui').onclick = () => gitModal.classList.add('hidden');
+    document.getElementById('git-refresh-btn').onclick = () => refreshGitStatus();
+
+    document.getElementById('git-commit-btn').onclick = async () => {
+        const message = document.getElementById('git-commit-message').value.trim();
+        if (!message) {
+            alert("Veuillez entrer un message de commit.");
+            return;
+        }
+
+        const btn = document.getElementById('git-commit-btn');
+        btn.disabled = true;
+        btn.textContent = "Commit en cours...";
+
+        const addRes = await window.electronAPI.gitAdd({ projectPath: currentDetailProject.path, files: [] }); // Stage all
+        if (addRes.success) {
+            const commitRes = await window.electronAPI.gitCommit({ projectPath: currentDetailProject.path, message });
+            if (commitRes.success) {
+                showToast("Git Commit", "Changements validés avec succès.");
+                document.getElementById('git-commit-message').value = '';
+                await refreshGitStatus();
+            } else {
+                alert(`Erreur Commit: ${commitRes.error}`);
+            }
+        } else {
+            alert(`Erreur Add: ${addRes.error}`);
+        }
+        btn.disabled = false;
+        btn.textContent = "Valider le Commit";
+    };
+
+    document.getElementById('git-push-btn').onclick = async () => {
+        const btn = document.getElementById('git-push-btn');
+        btn.disabled = true;
+        btn.textContent = "Pushing...";
+        const res = await window.electronAPI.gitPush(currentDetailProject.path);
+        if (res.success) {
+            showToast("Git Push", "Push effectué avec succès.");
+        } else {
+            alert(`Erreur Push: ${res.error}`);
+        }
+        btn.disabled = false;
+        btn.textContent = "⬆️ Push";
+    };
+
+    document.getElementById('git-pull-btn').onclick = async () => {
+        const btn = document.getElementById('git-pull-btn');
+        btn.disabled = true;
+        btn.textContent = "Pulling...";
+        const res = await window.electronAPI.gitPull(currentDetailProject.path);
+        if (res.success) {
+            showToast("Git Pull", "Mise à jour effectuée avec succès.");
+            await refreshGitStatus();
+        } else {
+            alert(`Erreur Pull: ${res.error}`);
+        }
+        btn.disabled = false;
+        btn.textContent = "⬇️ Pull";
     };
 
     document.getElementById('detail-open-folder').onclick = () => window.electronAPI.openFolder(currentDetailProject.path);

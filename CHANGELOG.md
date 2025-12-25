@@ -3,6 +3,7 @@
 ## [0.1.1] - 2025-12-25
 
 ### ✨ Nouvelles Fonctionnalités
+- **Interface Git Native** : Accédez à une interface GUI moderne directement dans l'application pour gérer vos commits, pushs et pulls sans quitter votre hub.
 - **Bouton Éditeur Intelligent** : Le bouton de lancement d'éditeur dans le Hub projet détecte maintenant automatiquement votre commande personnalisée (Cursor, Sublime, etc.) et met à jour son étiquette en conséquence.
 
 ### 🎨 Design & Expérience Utilisateur
