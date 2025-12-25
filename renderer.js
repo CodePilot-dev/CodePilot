@@ -787,7 +787,9 @@ function setupEventListeners() {
     };
 
     createReleaseBtn.onclick = () => {
-        document.getElementById('release-project-name').textContent = `Projet : ${currentDetailProject.name}`;
+        document.getElementById('release-project-name').innerHTML = `Projet : <b>${currentDetailProject.name}</b><br>
+        <span style="font-size:0.75rem; opacity:0.7; font-family: var(--font-mono);">${currentDetailProject.repoUrl}</span>`;
+
         document.getElementById('release-tag-input').value = '';
         document.getElementById('release-title-input').value = '';
         document.getElementById('release-body-input').value = '';
