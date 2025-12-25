@@ -132,12 +132,21 @@ ipcMain.handle('open-external', (event, url) => {
 });
 
 // Git Release Management
+// Git Release Management
 ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, tokens }) => {
     try {
-        if (repoUrl.includes('github.com')) {
-            const match = repoUrl.match(/github\.com\/([^/]+)\/([^/.]+)/);
-            if (!match) throw new Error("URL GitHub invalide (github.com/owner/repo)");
-            const [_, owner, repo] = match;
+        let owner, repo, projectPath;
+
+        // Helper to clean URL
+        const cleanUrl = repoUrl.replace(/^(https?:\/\/)?(www\.)?/, ''); // remove protocol/www
+
+        if (cleanUrl.includes('github.com')) {
+            // Updated extraction for GitHub to handle dots in repo names
+            const parts = cleanUrl.split('github.com/')[1].split('/');
+            owner = parts[0];
+            repo = parts[1] ? parts[1].replace(/\.git$/, '') : null;
+
+            if (!owner || !repo) throw new Error("URL GitHub invalide (github.com/owner/repo)");
             if (!tokens.githubToken) throw new Error("GitHub Token manquant (voir Réglages)");
 
             return new Promise((resolve) => {
@@ -160,7 +169,17 @@ ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, toke
                     res.on('data', d => resBody += d);
                     res.on('end', () => {
                         if (res.statusCode >= 200 && res.statusCode < 300) resolve({ success: true });
-                        else resolve({ success: false, error: `GitHub: ${res.statusCode}` });
+                        else {
+                            // Try to parse error message if JSON
+                            let errMsg = `GitHub: ${res.statusCode}`;
+                            try {
+                                const json = JSON.parse(resBody);
+                                if (json.message) errMsg += ` - ${json.message}`;
+                            } catch (e) {
+                                errMsg += ` - ${resBody.substring(0, 100)}`; // limit length
+                            }
+                            resolve({ success: false, error: errMsg });
+                        }
                     });
                 });
                 req.on('error', e => resolve({ success: false, error: e.message }));
@@ -169,10 +188,16 @@ ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, toke
             });
         }
 
-        else if (repoUrl.includes('gitlab.com')) {
-            const match = repoUrl.match(/gitlab\.com\/([^.]+)/);
-            if (!match) throw new Error("URL GitLab invalide");
-            const projectPath = encodeURIComponent(match[1].replace(/\.git$/, ''));
+        else if (cleanUrl.includes('gitlab.com')) {
+            // Updated extraction for GitLab to handle dots and subgroups
+            // takes everything after gitlab.com/ until end or .git
+            const pathParts = cleanUrl.split('gitlab.com/');
+            if (pathParts.length < 2) throw new Error("URL GitLab invalide");
+
+            let fullPath = pathParts[1];
+            fullPath = fullPath.replace(/\.git$/, '').replace(/\/$/, ''); // Remove .git and trailing slash
+            projectPath = encodeURIComponent(fullPath);
+
             if (!tokens.gitlabToken) throw new Error("GitLab Token manquant (voir Réglages)");
 
             return new Promise((resolve) => {
@@ -193,7 +218,17 @@ ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, toke
                     res.on('data', d => resBody += d);
                     res.on('end', () => {
                         if (res.statusCode >= 200 && res.statusCode < 300) resolve({ success: true });
-                        else resolve({ success: false, error: `GitLab: ${res.statusCode}` });
+                        else {
+                            let errMsg = `GitLab: ${res.statusCode}`;
+                            try {
+                                const json = JSON.parse(resBody);
+                                if (json.message) errMsg += ` - ${json.message}`;
+                                if (json.error) errMsg += ` - ${json.error}`;
+                            } catch (e) {
+                                errMsg += ` - ${resBody.substring(0, 100)}`;
+                            }
+                            resolve({ success: false, error: errMsg });
+                        }
                     });
                 });
                 req.on('error', e => resolve({ success: false, error: e.message }));
