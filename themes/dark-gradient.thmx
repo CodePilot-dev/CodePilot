@@ -1,0 +1,42 @@
+{
+    "name": "Dark Gradient",
+    "author": "GraphStats",
+    "description": "Thème sombre élégant avec dégradé violet-noir-cyan inspiré de la DA",
+    "version": "1.0.0",
+    
+    "colors": {
+        "--primary": "#06b6d4",
+        "--primary-dark": "#0891b2",
+        "--accent": "#8b5cf6",
+        "--bg-app": "#0a0a0f",
+        "--bg-sidebar": "#1a1625",
+        "--bg-card": "rgba(26, 22, 37, 0.7)",
+        "--bg-hub": "#1a1625",
+        "--border": "rgba(6, 182, 212, 0.15)",
+        "--text-main": "#e0f2fe",
+        "--text-muted": "#7dd3fc",
+        "--danger": "#ef4444",
+        "--success": "#10b981"
+    },
+    
+    "typography": {
+        "--font-main": "'Outfit', sans-serif"
+    },
+    
+    "dimensions": {
+        "--border-radius": "14px",
+        "--glass-blur": "18px",
+        "--card-size": "290px"
+    },
+    
+    "effects": {
+        "--transition": "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+        "--sidebar-opacity": "0.95"
+    },
+    
+    "interface": {
+        "appName": "CODEPILOT",
+        "bgGlow": true,
+        "compactMode": false
+    }
+}

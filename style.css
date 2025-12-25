@@ -621,8 +621,10 @@ textarea:focus {
 
 /* Project Detail Modal - The HUB (Redesigned) */
 .modal-content.project-detail-view {
-    width: 900px;
-    height: 80vh;
+    width: 85vw;
+    max-width: 800px;
+    height: 75vh;
+    max-height: 700px;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -634,7 +636,7 @@ textarea:focus {
 
 .detail-header {
     flex-shrink: 0;
-    padding: 30px 40px;
+    padding: 20px 30px;
     background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 70%);
     border-bottom: 1px solid var(--border);
     display: flex;
@@ -643,9 +645,9 @@ textarea:focus {
 }
 
 .detail-title-section h2 {
-    font-size: 2rem;
+    font-size: 1.6rem;
     letter-spacing: -0.02em;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     background: linear-gradient(90deg, #fff, #cbd5e1);
     -webkit-background-clip: text;
     background-clip: text;
@@ -673,11 +675,11 @@ textarea:focus {
 /* Toolbar */
 .detail-toolbar {
     flex-shrink: 0;
-    padding: 16px 40px;
+    padding: 12px 30px;
     background: rgba(255, 255, 255, 0.02);
     border-bottom: 1px solid var(--border);
     display: flex;
-    gap: 12px;
+    gap: 8px;
     align-items: center;
 }
 
@@ -722,17 +724,17 @@ textarea:focus {
 }
 
 .detail-col-main {
-    padding: 32px 40px;
+    padding: 20px 24px;
     overflow-y: auto;
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 24px;
 }
 
 .detail-col-side {
     background: rgba(0, 0, 0, 0.2);
-    padding: 32px;
+    padding: 20px;
     overflow-y: auto;
 }
 
