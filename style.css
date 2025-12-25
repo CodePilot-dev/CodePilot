@@ -439,26 +439,12 @@ textarea:focus {
     font-size: 0.65rem;
     padding: 3px 8px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
     color: var(--text-muted);
     font-weight: 500;
     text-transform: uppercase;
-}
-
-.fw-badge.next {
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: 1px solid #333;
-}
-
-.fw-badge.react {
-    background: rgba(97, 218, 251, 0.1);
-    color: #61dafb;
-}
-
-.fw-badge.vue {
-    background: rgba(66, 184, 131, 0.1);
-    color: #42b883;
+    display: inline-block;
 }
 
 .project-info p {
