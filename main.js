@@ -210,10 +210,11 @@ ipcMain.handle('check-updates', async () => {
     return new Promise((resolve) => {
         const options = {
             hostname: 'raw.githubusercontent.com',
-            path: '/CodePilot-dev/CodePilot/main/package.json',
+            path: `/CodePilot-dev/CodePilot/main/package.json?t=${Date.now()}`,
             method: 'GET',
             headers: {
-                'User-Agent': 'CodePilot-App'
+                'User-Agent': 'CodePilot-App',
+                'Cache-Control': 'no-cache'
             }
         };
 
