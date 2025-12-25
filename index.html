@@ -105,6 +105,10 @@
                         <span class="btn-icon">📁</span>
                         <span>Dossier</span>
                     </button>
+                    <button class="tool-btn" id="detail-edit-project">
+                        <span class="btn-icon">⚙️</span>
+                        <span>Réglages</span>
+                    </button>
                     <div class="v-divider"></div>
                     <button class="tool-btn" id="detail-create-release">
                         <span class="btn-icon">🚀</span>
@@ -172,6 +176,13 @@
             <div class="input-group">
                 <label>Nom du projet</label>
                 <input type="text" id="project-name-input" placeholder="Mon super projet">
+            </div>
+            <div class="input-group">
+                <label>Espace de travail</label>
+                <select id="project-space-input"
+                    style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white; border-radius: 8px;">
+                    <!-- Dynamic spaces here -->
+                </select>
             </div>
             <div class="input-group">
                 <label>Chemin local</label>

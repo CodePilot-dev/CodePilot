@@ -640,6 +640,21 @@ function openEditModal(project) {
     document.getElementById('project-editor-input').value = project.editor || 'code';
     document.getElementById('project-notes-input').value = project.notes || '';
     document.getElementById('confirm-project').textContent = 'Enregistrer';
+
+    // Populate Space Selector
+    const spaceSelect = document.getElementById('project-space-input');
+    spaceSelect.innerHTML = '';
+    config.spaces.forEach(s => {
+        const option = document.createElement('option');
+        option.value = s.id;
+        option.textContent = s.name;
+        // Check if project belongs to this space
+        if (s.projects.find(p => p.id === project.id)) {
+            option.selected = true;
+        }
+        spaceSelect.appendChild(option);
+    });
+
     renderTagSelector();
     projectModal.classList.remove('hidden');
 }
@@ -773,6 +788,20 @@ function setupEventListeners() {
         document.getElementById('project-editor-input').value = 'code';
         document.getElementById('project-notes-input').value = '';
         document.getElementById('confirm-project').textContent = 'Ajouter le projet';
+
+        // Populate Space Selector
+        const spaceSelect = document.getElementById('project-space-input');
+        spaceSelect.innerHTML = '';
+        config.spaces.forEach(s => {
+            const option = document.createElement('option');
+            option.value = s.id;
+            option.textContent = s.name;
+            if (s.id === config.activeSpaceId || (config.activeSpaceId === 'all' && s.id === 'default')) {
+                option.selected = true;
+            }
+            spaceSelect.appendChild(option);
+        });
+
         renderTagSelector();
         projectModal.classList.remove('hidden');
     };
@@ -992,17 +1021,39 @@ function setupEventListeners() {
                 name, path, repoUrl, editor, notes,
                 tags: selectedProjectTags
             };
+            const targetSpaceId = document.getElementById('project-space-input').value;
 
             if (editingProjectId) {
-                config.spaces.forEach(s => {
-                    const p = s.projects.find(proj => proj.id === editingProjectId);
-                    if (p) {
-                        Object.assign(p, projectData);
+                // Find current space of the project
+                let currentSpace = null;
+                let projectIndex = -1;
+
+                for (const s of config.spaces) {
+                    const idx = s.projects.findIndex(p => p.id === editingProjectId);
+                    if (idx !== -1) {
+                        currentSpace = s;
+                        projectIndex = idx;
+                        break;
                     }
-                });
+                }
+
+                if (currentSpace) {
+                    const project = currentSpace.projects[projectIndex];
+                    Object.assign(project, projectData);
+
+                    // Move if space changed
+                    if (currentSpace.id !== targetSpaceId) {
+                        const targetSpace = config.spaces.find(s => s.id === targetSpaceId);
+                        if (targetSpace) {
+                            // Remove from old
+                            currentSpace.projects.splice(projectIndex, 1);
+                            // Add to new
+                            targetSpace.projects.push(project);
+                        }
+                    }
+                }
             } else {
-                const spaceId = config.activeSpaceId === 'all' ? 'default' : config.activeSpaceId;
-                const space = config.spaces.find(s => s.id === spaceId);
+                const space = config.spaces.find(s => s.id === targetSpaceId);
                 if (space) {
                     space.projects.push({
                         id: Date.now().toString(),
@@ -1021,6 +1072,14 @@ function setupEventListeners() {
     document.getElementById('minimize-btn').onclick = () => window.electronAPI.minimize();
     document.getElementById('maximize-btn').onclick = () => window.electronAPI.maximize();
     document.getElementById('close-btn').onclick = () => window.electronAPI.close();
+
+    // New Detail Edit Button
+    document.getElementById('detail-edit-project').onclick = () => {
+        if (currentDetailProject) {
+            openEditModal(currentDetailProject);
+            detailModal.classList.add('hidden'); // Close detail to show edit modal clearly
+        }
+    };
 }
 
 init();
