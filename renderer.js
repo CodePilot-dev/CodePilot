@@ -110,7 +110,11 @@ function applyPersonalization() {
     const root = document.documentElement;
 
     // Apply values to CSS variables
-    if (p.accentColor) root.style.setProperty('--primary', p.accentColor);
+    if (p.accentColor) {
+        root.style.setProperty('--primary', p.accentColor);
+        // Sync glow with accent color (mix with black to keep it subtle and dark)
+        root.style.setProperty('--bg-lighting', `radial-gradient(circle at 50% 0%, color-mix(in srgb, ${p.accentColor}, black 60%), transparent 75%)`);
+    }
     if (p.fontFamily) root.style.setProperty('--font-main', p.fontFamily);
     if (p.glassBlur !== undefined) root.style.setProperty('--glass-blur', `${p.glassBlur}px`);
     if (p.borderRadius !== undefined) root.style.setProperty('--radius', `${p.borderRadius}px`);
