@@ -207,6 +207,12 @@ ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, toke
 
             if (!tokens.gitlabToken) throw new Error("GitLab Token manquant (voir Réglages)");
 
+            // Debug logging
+            console.log('[GitLab Release] Original URL:', repoUrl);
+            console.log('[GitLab Release] Extracted path:', fullPath);
+            console.log('[GitLab Release] Encoded path:', projectPath);
+            console.log('[GitLab Release] API endpoint:', `/api/v4/projects/${projectPath}/releases`);
+
             return new Promise((resolve) => {
                 const data = JSON.stringify({ name: title, tag_name: tag, description: body || '' });
                 const options = {
