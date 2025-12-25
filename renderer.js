@@ -53,6 +53,7 @@ const detailBadges = document.getElementById('detail-badges');
 const detailNotes = document.getElementById('detail-notes');
 const detailScriptsList = document.getElementById('detail-scripts-list');
 const detailUpdatesList = document.getElementById('detail-updates-list');
+const detailOpenEditorText = document.getElementById('detail-open-editor-text');
 
 
 // Initialize
@@ -219,6 +220,14 @@ async function openDetailModal(project) {
     detailName.textContent = project.name;
     detailPath.textContent = project.path;
     detailNotes.textContent = project.notes || 'Aucune note pour ce projet.';
+
+    // Update editor button text
+    const editorCmd = project.editor || 'code';
+    let editorName = 'VSCode';
+    if (editorCmd !== 'code') {
+        editorName = editorCmd.charAt(0).toUpperCase() + editorCmd.slice(1);
+    }
+    detailOpenEditorText.textContent = `Ouvrir ${editorName}`;
 
     // Render tags in detail
     const tagsContainer = document.createElement('div');
