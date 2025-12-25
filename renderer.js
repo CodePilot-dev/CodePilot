@@ -897,16 +897,36 @@ function setupEventListeners() {
 
     document.getElementById('git-push-btn').onclick = async () => {
         const btn = document.getElementById('git-push-btn');
+        const originalText = btn.textContent;
         btn.disabled = true;
         btn.textContent = "Pushing...";
-        const res = await window.electronAPI.gitPush(currentDetailProject.path);
+
+        let res = await window.electronAPI.gitPush(currentDetailProject.path);
+
+        // Auto-fix system: Handle "fetch first" / "rejected" / "non-fast-forward"
+        if (!res.success && (
+            res.error.includes('fetch first') ||
+            res.error.includes('rejected') ||
+            res.error.includes('tip of your current branch is behind') ||
+            res.error.includes('remote contains work')
+        )) {
+            // Try to auto-fix by pulling first
+            const pullRes = await window.electronAPI.gitPull(currentDetailProject.path);
+            if (pullRes.success) {
+                // If pull succeeded, retry push
+                res = await window.electronAPI.gitPush(currentDetailProject.path);
+            }
+        }
+
         if (res.success) {
             showToast("Git Push", "Push effectué avec succès.");
         } else {
+            // Only show error if auto-fix failed or wasn't applicable
             alert(`Erreur Push: ${res.error}`);
         }
+
         btn.disabled = false;
-        btn.textContent = "⬆️ Push";
+        btn.textContent = originalText; // Restore original text (likely "⬆️ Push")
     };
 
     document.getElementById('git-pull-btn').onclick = async () => {
