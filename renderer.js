@@ -268,9 +268,13 @@ async function createProjectCard(project) {
         <div class="project-info">
             <div class="project-title-row">
                 <h3>${project.name}</h3>
-                ${framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : ''}
             </div>
             <p>${truncatePath(project.path)}</p>
+            
+            <div style="margin-top: 12px; margin-bottom: 4px; min-height: 24px;">
+                ${framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : ''}
+            </div>
+
             <div class="project-tags">
                 ${(project.tags || []).map(tagId => {
         const tag = config.settings.globalTags.find(t => t.id === tagId);
