@@ -88,6 +88,6 @@ L'application est en version alpha
 
 ## Contribution 
 
-Toute contribution est les bienvenues! Pour des raisons de maintenance et de configuration, merci de faire votre contribution sur GitLab : https://gitlab.com/codepilot-dev/codepilot
+Toutes les contributions sont les bienvenues! Pour des raisons de maintenance et de configuration, merci de faire votre contribution sur GitLab : https://gitlab.com/codepilot-dev/codepilot
 
 Merci à vous!
