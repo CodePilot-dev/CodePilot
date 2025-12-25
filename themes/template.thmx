@@ -1,0 +1,43 @@
+{
+    "name": "Nom de Votre Thème",
+    "author": "Votre Nom",
+    "description": "Description de votre thème",
+    "version": "1.0.0",
+    
+    "colors": {
+        "--primary": "#8b5cf6",
+        "--primary-dark": "#7c3aed",
+        "--accent": "#ec4899",
+        "--bg-app": "#0f172a",
+        "--bg-sidebar": "#1e293b",
+        "--bg-card": "rgba(30, 41, 59, 0.6)",
+        "--bg-hub": "#1e293b",
+        "--border": "rgba(148, 163, 184, 0.1)",
+        "--text-main": "#f1f5f9",
+        "--text-muted": "#94a3b8",
+        "--danger": "#ef4444",
+        "--success": "#10b981"
+    },
+    
+    "typography": {
+        "--font-main": "'Outfit', sans-serif",
+        "--font-mono": "'JetBrains Mono', monospace"
+    },
+    
+    "dimensions": {
+        "--card-size": "280px",
+        "--border-radius": "12px",
+        "--glass-blur": "10px"
+    },
+    
+    "effects": {
+        "--transition": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        "--sidebar-opacity": "1"
+    },
+    
+    "interface": {
+        "appName": "CODEPILOT",
+        "bgGlow": true,
+        "compactMode": false
+    }
+}
