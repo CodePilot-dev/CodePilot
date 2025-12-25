@@ -306,7 +306,16 @@
 
     <div id="settings-modal" class="modal hidden">
         <div class="modal-content">
-            <h3>⚙️ Configuration</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>⚙️ Configuration</h3>
+                <div style="text-align: right;">
+                    <span id="app-version-display"
+                        style="font-size: 0.7rem; color: var(--text-muted); display: block;">v0.1.1</span>
+                    <button id="check-update-btn"
+                        style="background: none; border: none; color: var(--primary); font-size: 0.7rem; cursor: pointer; padding: 0; text-decoration: underline;">Vérifier
+                        les MAJ</button>
+                </div>
+            </div>
             <p class="modal-description">Gérez vos jetons d'accès et personnalisez l'apparence de votre hub.</p>
 
             <div class="input-group">

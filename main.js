@@ -179,6 +179,79 @@ ipcMain.handle('create-release', async (event, { repoUrl, tag, title, body, toke
     }
 });
 
+ipcMain.handle('check-updates', async () => {
+    return new Promise((resolve) => {
+        const options = {
+            hostname: 'raw.githubusercontent.com',
+            path: '/CodePilot-dev/CodePilot/main/package.json',
+            method: 'GET',
+            headers: {
+                'User-Agent': 'CodePilot-App'
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', d => body += d);
+            res.on('end', () => {
+                try {
+                    if (res.statusCode === 200) {
+                        const pkg = JSON.parse(body);
+                        resolve({
+                            success: true,
+                            version: pkg.version,
+                            url: 'https://github.com/CodePilot-dev/CodePilot'
+                        });
+                    } else {
+                        resolve({ success: false, error: `GitHub error: ${res.statusCode}` });
+                    }
+                } catch (e) {
+                    resolve({ success: false, error: 'Failed to parse remote package.json' });
+                }
+            });
+        });
+
+        req.on('error', e => resolve({ success: false, error: e.message }));
+        req.end();
+    });
+});
+
+ipcMain.handle('download-update', async () => {
+    const files = ['main.js', 'renderer.js', 'style.css', 'index.html', 'preload.js', 'package.json'];
+    const baseUrl = 'https://raw.githubusercontent.com/CodePilot-dev/CodePilot/main/';
+    const projectDir = __dirname;
+
+    try {
+        for (const file of files) {
+            const dest = path.join(projectDir, file);
+            await new Promise((resolve, reject) => {
+                const fileReq = https.get(baseUrl + file, (res) => {
+                    if (res.statusCode !== 200) {
+                        reject(new Error(`Failed to download ${file}: ${res.statusCode}`));
+                        return;
+                    }
+                    const writer = fs.createWriteStream(dest);
+                    res.pipe(writer);
+                    writer.on('finish', () => {
+                        writer.close();
+                        resolve();
+                    });
+                    writer.on('error', reject);
+                });
+                fileReq.on('error', reject);
+            });
+        }
+
+        // Success! Relaunch
+        app.relaunch();
+        app.exit(0);
+        return { success: true };
+    } catch (e) {
+        console.error("Update failed:", e);
+        return { success: false, error: e.message };
+    }
+});
+
 // Git GUI Handlers
 ipcMain.handle('check-git-repo', (event, projectPath) => {
     return fs.existsSync(path.join(projectPath, '.git'));

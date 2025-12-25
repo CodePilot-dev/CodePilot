@@ -13,6 +13,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     close: () => ipcRenderer.invoke('window-close'),
     getConfig: () => ipcRenderer.invoke('get-config'),
     saveConfig: (config) => ipcRenderer.invoke('save-config', config),
+    checkUpdates: () => ipcRenderer.invoke('check-updates'),
+    downloadUpdate: () => ipcRenderer.invoke('download-update'),
     createRelease: (data) => ipcRenderer.invoke('create-release', data),
     selectFile: (filters) => ipcRenderer.invoke('select-file', filters),
     readFile: (path) => ipcRenderer.invoke('read-file', path),

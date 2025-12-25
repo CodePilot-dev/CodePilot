@@ -1,25 +1,52 @@
 # Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production / Build
 dist/
 dist-electron/
+build/
+out/
+release/
+*.exe
+*.msi
+*.zip
 
 # IDEs
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 .idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.sublime-project
+*.sublime-workspace
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# Local config (Electron user data usually goes elsewhere, but good practice)
+# Local config & Personal data
 config.json
+.env
+.env.*
+!.env.example
+
+# Temporary files
+.temp/
+.tmp/

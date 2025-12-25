@@ -26,7 +26,7 @@ let config = {
 let editingProjectId = null;
 let currentDetailProject = null;
 let selectedProjectTags = []; // Temporary storage for modal
-const APP_VERSION = '0.0.9';
+const APP_VERSION = '0.1.1';
 
 function truncatePath(path) {
     if (!path) return '';
@@ -87,6 +87,7 @@ async function init() {
     renderProjects();
     if (config.settings.theme) applyTheme(config.settings.theme);
     applyPersonalization();
+    checkForUpdates();
     setupEventListeners();
 }
 
@@ -111,6 +112,38 @@ function applyPersonalization() {
     const logo = document.querySelector('.logo');
     if (logo) logo.textContent = p.appName || 'CODEPILOT';
     document.title = p.appName || 'CodePilot';
+}
+
+async function checkForUpdates(manual = false) {
+    const result = await window.electronAPI.checkUpdates();
+    if (result.success) {
+        const latest = result.version;
+        const current = APP_VERSION;
+
+        if (latest !== current && !manual) {
+            showToast("Mise à jour disponible", `La version ${latest} est disponible ! Cliquez pour l'installer.`, () => {
+                startUpdate();
+            });
+        } else if (manual) {
+            if (latest !== current) {
+                if (confirm(`Une nouvelle version (${latest}) est disponible. Voulez-vous l'installer maintenant ? L'application redémarrera.`)) {
+                    startUpdate();
+                }
+            } else {
+                showToast("À jour", "Vous utilisez déjà la dernière version.");
+            }
+        }
+    } else if (manual) {
+        alert("Erreur lors de la vérification des mises à jour.");
+    }
+}
+
+async function startUpdate() {
+    showToast("Mise à jour", "Téléchargement des fichiers en cours...");
+    const res = await window.electronAPI.downloadUpdate();
+    if (!res.success) {
+        alert("La mise à jour a échoué : " + res.error);
+    }
 }
 
 function applyTheme(theme) {
@@ -425,10 +458,11 @@ function renderProjectUpdates() {
     });
 }
 
-function showToast(title, message) {
+function showToast(title, message, callback = null) {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = 'toast';
+    if (callback) toast.style.cursor = 'pointer';
     toast.innerHTML = `
         <div class="toast-icon">🚀</div>
         <div class="toast-content">
@@ -436,8 +470,11 @@ function showToast(title, message) {
             <p>${message}</p>
         </div>
     `;
+    if (callback) toast.onclick = callback;
     container.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
+    setTimeout(() => {
+        if (toast.parentNode) toast.remove();
+    }, 5000);
 }
 
 // Actions
@@ -607,6 +644,11 @@ function setupEventListeners() {
         const el = document.getElementById(id);
         if (el) el.oninput = updatePreview;
     });
+
+    document.getElementById('check-update-btn').onclick = (e) => {
+        e.preventDefault();
+        checkForUpdates(true);
+    };
 
     showSettingsBtn.onclick = () => {
         const p = config.settings.personalization || {
