@@ -34,6 +34,7 @@ let activeFilters = {
     tags: [],
     frameworks: []
 };
+let currentRenderId = 0;
 const translations = {
     fr: {
         workspaces: "Espaces",
@@ -216,8 +217,6 @@ async function init() {
             ];
         }
     }
-    renderSpaces();
-    renderProjects();
     if (config.settings.theme) applyTheme(config.settings.theme);
     applyPersonalization();
     checkForUpdates();
@@ -420,6 +419,7 @@ function renderSpaces() {
 }
 
 async function renderProjects() {
+    const renderId = ++currentRenderId;
     let projects = [];
     if (config.activeSpaceId === 'all') {
         currentSpaceName.textContent = t('all_projects');
@@ -472,7 +472,9 @@ async function renderProjects() {
     } else {
         emptyState.classList.add('hidden');
         for (const project of projects) {
+            if (renderId !== currentRenderId) return;
             const card = await createProjectCard(project);
+            if (renderId !== currentRenderId) return;
             projectsGrid.appendChild(card);
         }
     }
