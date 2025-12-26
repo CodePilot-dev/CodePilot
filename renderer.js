@@ -5,6 +5,7 @@ let config = {
         githubToken: '',
         gitlabToken: '',
         theme: null,
+        language: 'fr',
         globalTags: [
             { id: '1', name: 'En cours', color: '#38bdf8' },
             { id: '2', name: 'Terminé', color: '#10b981' }
@@ -31,6 +32,116 @@ let selectedProjectTags = []; // Temporary storage for modal
 let activeFilters = {
     tags: [],
     frameworks: []
+};
+const translations = {
+    fr: {
+        workspaces: "Espaces",
+        all_projects: "Tous les projets",
+        my_projects: "Mes Projets",
+        quick_search: "Recherche rapide (Ctrl+K)...",
+        new_project: "+ Nouveau Projet",
+        new_space: "Nouvel Espace",
+        settings: "Configuration",
+        language: "Langue",
+        appearance: "Thème & Apparence",
+        tokens: "Jetons & Accès",
+        interface: "Interface & Nom",
+        labels: "Étiquettes",
+        save: "Sauvegarder",
+        cancel: "Annuler",
+        close: "Fermer",
+        reset: "Réinitialiser",
+        load: "Charger",
+        export: "Exporter",
+        app_name: "Nom de l'application",
+        font: "Police principale",
+        card_size: "Taille des cartes",
+        animations: "Animations",
+        sidebar_opacity: "Opacité Sidebar",
+        blur: "Flou",
+        radius: "Arrondi",
+        glow: "Lueur",
+        compact: "Compact",
+        auto_start: "Démarrage auto",
+        foreground: "Affichage actif",
+        delete_proj_confirm: "Supprimer ce projet ?",
+        delete_space_confirm: "Supprimer cet espace et tous ses projets ?",
+        no_projects: "Prêt à coder ?",
+        add_first: "Ajoute ton premier projet pour commencer.",
+        frameworks: "Frameworks",
+        tags: "Étiquettes",
+        clear: "Effacer",
+        toast_save: "Configuration sauvegardée",
+        v_vscode: "Ouvrir VSCode",
+        v_terminal: "Terminal",
+        v_folder: "Dossier",
+        v_settings: "Réglages",
+        v_release: "Release",
+        v_repo: "Repo",
+        v_git_gui: "Git GUI",
+        v_roadmap: "Roadmap",
+        v_scripts: "Scripts npm",
+        v_notes: "Notes & Mémo",
+        v_scheduled: "Prévu le",
+        v_finished: "Terminé le",
+        v_upcoming: "À venir",
+        v_done: "Terminé",
+        v_add_step: "Ajouter une étape"
+    },
+    en: {
+        workspaces: "Workspaces",
+        all_projects: "All Projects",
+        my_projects: "My Projects",
+        quick_search: "Quick search (Ctrl+K)...",
+        new_project: "+ New Project",
+        new_space: "New Space",
+        settings: "Settings",
+        language: "Language",
+        appearance: "Theme & Appearance",
+        tokens: "Tokens & Access",
+        interface: "Interface & Name",
+        labels: "Labels",
+        save: "Save",
+        cancel: "Cancel",
+        close: "Close",
+        reset: "Reset",
+        load: "Load",
+        export: "Export",
+        app_name: "Application Name",
+        font: "Primary Font",
+        card_size: "Card Size",
+        animations: "Animations",
+        sidebar_opacity: "Sidebar Opacity",
+        blur: "Blur",
+        radius: "Radius",
+        glow: "Glow",
+        compact: "Compact",
+        auto_start: "Auto Start",
+        foreground: "Active Display",
+        delete_proj_confirm: "Delete this project?",
+        delete_space_confirm: "Delete this workspace and all its projects?",
+        no_projects: "Ready to code?",
+        add_first: "Add your first project to get started.",
+        frameworks: "Frameworks",
+        tags: "Tags",
+        clear: "Clear",
+        toast_save: "Settings saved",
+        v_vscode: "Open VSCode",
+        v_terminal: "Terminal",
+        v_folder: "Folder",
+        v_settings: "Settings",
+        v_release: "Release",
+        v_repo: "Repo",
+        v_git_gui: "Git GUI",
+        v_roadmap: "Roadmap",
+        v_scripts: "NPM Scripts",
+        v_notes: "Notes & Memo",
+        v_scheduled: "Scheduled on",
+        v_finished: "Finished on",
+        v_upcoming: "Upcoming",
+        v_done: "Finished",
+        v_add_step: "Add a step"
+    }
 };
 let APP_VERSION = '0.0.0';
 
@@ -99,6 +210,7 @@ async function init() {
     if (config.settings.theme) applyTheme(config.settings.theme);
     applyPersonalization();
     checkForUpdates();
+    applyLanguage();
     setupEventListeners();
 
     // Global Shortcuts
@@ -265,7 +377,7 @@ function renderSpaces() {
 
     const allItem = document.createElement('div');
     allItem.className = `nav-item ${config.activeSpaceId === 'all' ? 'active' : ''}`;
-    allItem.innerHTML = `<span>🚀 Tous les projets</span>`;
+    allItem.innerHTML = `<span>🚀 ${t('all_projects')}</span>`;
     allItem.onclick = () => {
         config.activeSpaceId = 'all';
         renderSpaces();
@@ -298,12 +410,12 @@ function renderSpaces() {
 async function renderProjects() {
     let projects = [];
     if (config.activeSpaceId === 'all') {
-        currentSpaceName.textContent = "Tous les projets";
+        currentSpaceName.textContent = t('all_projects');
         projects = config.spaces.flatMap(s => s.projects);
     } else {
         const activeSpace = config.spaces.find(s => s.id === config.activeSpaceId);
         if (!activeSpace) {
-            currentSpaceName.textContent = "Tous les projets";
+            currentSpaceName.textContent = t('all_projects');
             projects = config.spaces.flatMap(s => s.projects);
         } else {
             currentSpaceName.textContent = activeSpace.name;
@@ -750,6 +862,49 @@ function openEditModal(project) {
     projectModal.classList.remove('hidden');
 }
 
+// Language Management
+function t(key) {
+    const lang = config.settings.language || 'fr';
+    return translations[lang][key] || translations['fr'][key] || key;
+}
+
+function applyLanguage() {
+    const lang = config.settings.language || 'fr';
+
+    // Sidebar
+    const sidebarHeader = document.querySelector('.sidebar-header h2');
+    if (sidebarHeader) sidebarHeader.textContent = t('workspaces');
+
+    // Header
+    const searchInput = document.getElementById('project-search');
+    if (searchInput) searchInput.placeholder = t('quick_search');
+
+    const addProjectBtnLabel = document.getElementById('add-project-btn');
+    if (addProjectBtnLabel) addProjectBtnLabel.textContent = t('new_project');
+
+    // Filter Bar
+    const fwLabel = document.querySelector('#filter-bar .filter-group:nth-child(1) .filter-label');
+    if (fwLabel) fwLabel.textContent = t('frameworks') + ' :';
+    const tagLabel = document.querySelector('#filter-bar .filter-group:nth-child(2) .filter-label');
+    if (tagLabel) tagLabel.textContent = t('tags') + ' :';
+    const clearBtn = document.getElementById('clear-filters-btn');
+    if (clearBtn) clearBtn.textContent = t('clear');
+
+    // Empty State
+    const emptyTitle = document.querySelector('#empty-state h3');
+    if (emptyTitle) emptyTitle.textContent = t('no_projects');
+    const emptyDesc = document.querySelector('#empty-state p');
+    if (emptyDesc) emptyDesc.textContent = t('add_first');
+
+    // Modals & Settings
+    // (Many are updated when opened, but let's do the static ones)
+    const settingsTitle = document.querySelector('#settings-modal h3');
+    if (settingsTitle) settingsTitle.textContent = '⚙️ ' + t('settings');
+
+    renderSpaces();
+    renderProjects();
+}
+
 // Filter Bar Logic
 function renderFilterBar() {
     const fwContainer = document.getElementById('framework-filters');
@@ -921,6 +1076,7 @@ function setupEventListeners() {
         document.getElementById('github-token-input').value = config.settings.githubToken || '';
         document.getElementById('gitlab-token-input').value = config.settings.gitlabToken || '';
         document.getElementById('current-theme-name').textContent = config.settings.theme ? (config.settings.theme.name || 'Thème personnalisé') : 'Thème par défaut';
+        document.getElementById('setting-language').value = config.settings.language || 'fr';
         renderGlobalTagsManager();
         settingsModal.classList.remove('hidden');
     };
@@ -1120,8 +1276,10 @@ function setupEventListeners() {
     document.getElementById('confirm-settings').onclick = () => {
         config.settings.githubToken = document.getElementById('github-token-input').value.trim();
         config.settings.gitlabToken = document.getElementById('gitlab-token-input').value.trim();
+        config.settings.language = document.getElementById('setting-language').value;
         save();
-        showToast("Configuration", "Jetons d'accès sauvegardés.");
+        applyLanguage();
+        showToast(t('settings'), t('toast_save'));
         settingsModal.classList.add('hidden');
     };
 
