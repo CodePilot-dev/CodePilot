@@ -26,6 +26,10 @@ let config = {
 let editingProjectId = null;
 let currentDetailProject = null;
 let selectedProjectTags = []; // Temporary storage for modal
+let activeFilters = {
+    tags: [],
+    frameworks: []
+};
 let APP_VERSION = '0.0.0';
 
 function truncatePath(path) {
@@ -306,6 +310,25 @@ async function renderProjects() {
             p.path.toLowerCase().includes(searchTerm) ||
             (p.notes && p.notes.toLowerCase().includes(searchTerm))
         );
+    }
+
+    // Filter by Tags
+    if (activeFilters.tags.length > 0) {
+        projects = projects.filter(p =>
+            (p.tags || []).some(tId => activeFilters.tags.includes(tId))
+        );
+    }
+
+    // Filter by Frameworks
+    if (activeFilters.frameworks.length > 0) {
+        const results = await Promise.all(projects.map(async p => {
+            const pkg = await window.electronAPI.readPackageJson(p.path);
+            const fw = detectFramework(pkg);
+            return { project: p, fw };
+        }));
+        projects = results
+            .filter(r => r.fw && activeFilters.frameworks.includes(r.fw.id))
+            .map(r => r.project);
     }
 
     projects.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
@@ -719,9 +742,90 @@ function openEditModal(project) {
     projectModal.classList.remove('hidden');
 }
 
+// Filter Bar Logic
+function renderFilterBar() {
+    const fwContainer = document.getElementById('framework-filters');
+    const tagContainer = document.getElementById('tag-filters');
+    if (!fwContainer || !tagContainer) return;
+
+    fwContainer.innerHTML = '';
+    tagContainer.innerHTML = '';
+
+    const frameworks = [
+        { id: 'next', name: 'Next.js' },
+        { id: 'react', name: 'React' },
+        { id: 'vue', name: 'Vue' },
+        { id: 'svelte', name: 'Svelte' },
+        { id: 'electron', name: 'Electron' },
+        { id: 'vite', name: 'Vite' },
+        { id: 'ts', name: 'TS' }
+    ];
+
+    frameworks.forEach(fw => {
+        const chip = document.createElement('div');
+        const isActive = activeFilters.frameworks.includes(fw.id);
+        chip.className = `filter-chip ${isActive ? 'active' : ''}`;
+        chip.textContent = fw.name;
+        chip.onclick = () => {
+            if (isActive) {
+                activeFilters.frameworks = activeFilters.frameworks.filter(id => id !== fw.id);
+            } else {
+                activeFilters.frameworks.push(fw.id);
+            }
+            renderFilterBar();
+            renderProjects();
+        };
+        fwContainer.appendChild(chip);
+    });
+
+    config.settings.globalTags.forEach(tag => {
+        const chip = document.createElement('div');
+        const isActive = activeFilters.tags.includes(tag.id);
+        chip.className = `filter-chip ${isActive ? 'active' : ''}`;
+        chip.style.setProperty('--tag-color', tag.color);
+        chip.textContent = tag.name;
+        if (isActive) {
+            chip.style.background = tag.color;
+            chip.style.borderColor = tag.color;
+            chip.style.color = 'white';
+        }
+        chip.onclick = () => {
+            if (isActive) {
+                activeFilters.tags = activeFilters.tags.filter(id => id !== tag.id);
+            } else {
+                activeFilters.tags.push(tag.id);
+            }
+            renderFilterBar();
+            renderProjects();
+        };
+        tagContainer.appendChild(chip);
+    });
+
+    const filterBar = document.getElementById('filter-bar');
+    const hasActiveFilters = activeFilters.tags.length > 0 || activeFilters.frameworks.length > 0;
+    document.getElementById('clear-filters-btn').style.display = hasActiveFilters ? 'block' : 'none';
+}
+
 // Event Listeners
 function setupEventListeners() {
     projectSearch.oninput = () => renderProjects();
+
+    const toggleFiltersBtn = document.getElementById('toggle-filters-btn');
+    const filterBar = document.getElementById('filter-bar');
+
+    toggleFiltersBtn.onclick = () => {
+        const isHidden = filterBar.classList.toggle('hidden');
+        if (!isHidden) {
+            renderFilterBar();
+        }
+    };
+
+    document.getElementById('clear-filters-btn').onclick = () => {
+        activeFilters.tags = [];
+        activeFilters.frameworks = [];
+        renderFilterBar();
+        renderProjects();
+    };
 
     // Personalization Real-time Preview in Settings
     const updatePreview = () => {
