@@ -23,7 +23,8 @@ let config = {
             compactMode: false,
             autoStart: false,
             foregroundStart: true,
-            trayMode: false
+            trayMode: false,
+            performanceMode: false
         }
     }
 };
@@ -69,6 +70,7 @@ const translations = {
         foreground: "Affichage actif",
         background: "Réduire en arrière-plan",
         glow: "Lueur néon",
+        performance: "Mode Performance",
         general: "Général",
         appearance_title: "Apparence",
         system: "Système",
@@ -131,6 +133,7 @@ const translations = {
         foreground: "Active Display",
         background: "Minimize to Tray",
         glow: "Neon Glow",
+        performance: "Performance Mode",
         general: "General",
         appearance_title: "Appearance",
         system: "System",
@@ -207,7 +210,7 @@ const detailOpenEditorText = document.getElementById('detail-open-editor-text');
 
 // Initialize
 async function init() {
-    // Fetch version from package.json automatically
+    // 1. Fetch Basic Info
     APP_VERSION = await window.electronAPI.getAppVersion();
     const versionDisplay = document.getElementById('app-version-display');
     if (versionDisplay) versionDisplay.textContent = `v${APP_VERSION}`;
@@ -215,20 +218,32 @@ async function init() {
     const savedConfig = await window.electronAPI.getConfig();
     if (savedConfig) {
         config = savedConfig;
-        if (!config.activeSpaceId) config.activeSpaceId = config.spaces[0].id;
-        if (!config.settings) config.settings = {};
-        if (!config.settings.globalTags) {
-            config.settings.globalTags = [
-                { id: '1', name: 'En cours', color: '#38bdf8' },
-                { id: '2', name: 'Terminé', color: '#10b981' }
-            ];
-        }
     }
+
+    // 2. Default structure safety
+    if (!config.spaces || config.spaces.length === 0) config.spaces = [{ id: 'default', name: 'Général', projects: [] }];
+    if (!config.activeSpaceId) config.activeSpaceId = config.spaces[0].id;
+    if (!config.settings) config.settings = {};
+    if (!config.settings.personalization) config.settings.personalization = {};
+    if (!config.settings.globalTags) {
+        config.settings.globalTags = [
+            { id: '1', name: 'En cours', color: '#38bdf8' },
+            { id: '2', name: 'Terminé', color: '#10b981' }
+        ];
+    }
+
+    // 3. Apply Environment
     if (config.settings.theme) applyTheme(config.settings.theme);
     applyPersonalization();
-    checkForUpdates();
     applyLanguage();
     setupEventListeners();
+
+    // 4. Initial Render
+    renderSpaces();
+    renderProjects();
+
+    // 5. Background tasks
+    checkForUpdates();
 
     // Global Shortcuts
     document.addEventListener('keydown', (e) => {
@@ -272,9 +287,20 @@ function applyPersonalization() {
         window.electronAPI.setWindowState({ focus: true });
     }
     if (p.trayMode !== undefined) window.electronAPI.setTrayMode(p.trayMode);
+
+    // Performance Mode logic
+    document.body.classList.toggle('performance-mode', !!p.performanceMode);
+    if (!!p.performanceMode) {
+        root.style.setProperty('--glass-blur', '0px');
+        root.style.setProperty('--anim-speed', '0s');
+        document.body.classList.add('performance-mode');
+    } else {
+        document.body.classList.remove('performance-mode');
+    }
 }
 
 async function checkForUpdates(manual = false) {
+    if (config.settings.personalization && config.settings.personalization.performanceMode && !manual) return;
     const result = await window.electronAPI.checkUpdates();
     if (result.success) {
         const latest = result.version;
@@ -522,8 +548,10 @@ async function renderProjects() {
         );
     }
 
-    // Filter by Frameworks
-    if (activeFilters.frameworks.length > 0) {
+    // Filter by Framework (skipped in performance mode to save RAM)
+    const isPerf = !!(config.settings.personalization && config.settings.personalization.performanceMode);
+
+    if (activeFilters.frameworks.length > 0 && !isPerf) {
         const results = await Promise.all(projects.map(async p => {
             const pkg = await window.electronAPI.readPackageJson(p.path);
             const fw = detectFramework(pkg);
@@ -538,8 +566,9 @@ async function renderProjects() {
     projectsCount.textContent = `${projects.length} projet${projects.length > 1 ? 's' : ''}`;
     projectsGrid.innerHTML = '';
 
-    if (projects.length === 0) {
+    if (!projects || projects.length === 0) {
         emptyState.classList.remove('hidden');
+        projectsGrid.innerHTML = '';
     } else {
         emptyState.classList.add('hidden');
         for (const project of projects) {
@@ -552,32 +581,34 @@ async function renderProjects() {
 }
 
 async function createProjectCard(project) {
+    const isPerf = !!(config.settings.personalization && config.settings.personalization.performanceMode);
     const card = document.createElement('div');
-    card.className = `project-card ${project.pinned ? 'pinned' : ''}`;
+    card.className = `project-card ${project.pinned ? 'pinned' : ''} ${isPerf ? 'perf' : ''}`;
 
-    const pkg = await window.electronAPI.readPackageJson(project.path);
-    const framework = detectFramework(pkg);
+    let framework = null;
+    if (!isPerf) {
+        const pkg = await window.electronAPI.readPackageJson(project.path);
+        framework = detectFramework(pkg);
+    }
 
     card.innerHTML = `
-        <div class="project-card-header">
-            <button class="card-action-btn pin-project ${project.pinned ? 'active' : ''}" title="${project.pinned ? 'Désépingler' : 'Épingler'}">
+        <div class="project-card-header ${isPerf ? 'hidden' : ''}">
+            <button class="card-action-btn pin-project ${project.pinned ? 'active' : ''}">
                 ${project.pinned ? '★' : '☆'}
             </button>
-            <button class="card-action-btn edit-project" title="Modifier le projet">✎</button>
-            <button class="card-action-btn delete-project" title="Supprimer le projet">✕</button>
+            <button class="card-action-btn edit-project">✎</button>
+            <button class="card-action-btn delete-project">✕</button>
         </div>
         <div class="project-info">
-            <div class="project-title-row">
-                <h3>${project.name}</h3>
-            </div>
-            <p>${truncatePath(project.path)}</p>
+            <h3 style="${isPerf ? 'font-size: 0.9rem;' : ''}">${project.name}</h3>
+            <p style="${isPerf ? 'display:none;' : ''}">${truncatePath(project.path)}</p>
             
-            <div class="project-tags" style="margin-top: 12px;">
+            <div class="project-tags" style="${isPerf ? 'margin-top: 5px;' : 'margin-top: 12px;'}">
                 ${framework ? `<span class="fw-badge ${framework.id}">${framework.name}</span>` : ''}
-                ${(project.tags || []).map(tagId => {
+                ${isPerf ? '' : (project.tags || []).map(tagId => {
         const tag = config.settings.globalTags.find(t => t.id === tagId);
         if (!tag) return '';
-        return `<span class="tag" style="--tag-color: ${tag.color}; border-color: ${tag.color}44; background: ${tag.color}11;">${tag.name}</span>`;
+        return `<span class="tag" style="--tag-color: ${tag.color};">${tag.name}</span>`;
     }).join('')}
             </div>
         </div>
@@ -592,15 +623,21 @@ async function createProjectCard(project) {
         deleteProject(project.id);
     };
 
-    card.querySelector('.edit-project').onclick = (e) => {
-        e.stopPropagation();
-        openEditModal(project);
-    };
+    const editBtn = card.querySelector('.edit-project');
+    if (editBtn) {
+        editBtn.onclick = (e) => {
+            e.stopPropagation();
+            openEditModal(project);
+        };
+    }
 
-    card.querySelector('.pin-project').onclick = (e) => {
-        e.stopPropagation();
-        togglePin(project.id);
-    };
+    const pinBtn = card.querySelector('.pin-project');
+    if (pinBtn) {
+        pinBtn.onclick = (e) => {
+            e.stopPropagation();
+            togglePin(project.id);
+        };
+    }
 
     // Drag support
     card.draggable = true;
@@ -1032,6 +1069,8 @@ function applyLanguage() {
     if (glowLabel) glowLabel.textContent = t('glow');
     const compactLabel = document.getElementById('label-compact');
     if (compactLabel) compactLabel.textContent = t('compact');
+    const performanceLabel = document.getElementById('label-performance');
+    if (performanceLabel) performanceLabel.textContent = t('performance');
     const autoStartLabel = document.querySelector('label[for="setting-auto-start"]');
     if (autoStartLabel) autoStartLabel.textContent = t('auto_start');
 
@@ -1153,7 +1192,8 @@ function setupEventListeners() {
             compactMode: document.getElementById('setting-compact-mode').checked,
             autoStart: document.getElementById('setting-auto-start').checked,
             foregroundStart: document.getElementById('setting-foreground-start').checked,
-            trayMode: document.getElementById('setting-tray-mode').checked
+            trayMode: document.getElementById('setting-tray-mode').checked,
+            performanceMode: document.getElementById('setting-performance-mode').checked
         };
 
         // Update labels
@@ -1171,7 +1211,8 @@ function setupEventListeners() {
         'setting-app-name', 'setting-accent-color', 'setting-font-family',
         'setting-glass-blur', 'setting-border-radius', 'setting-card-size',
         'setting-animations', 'setting-sidebar-opacity', 'setting-bg-glow',
-        'setting-compact-mode', 'setting-auto-start', 'setting-foreground-start', 'setting-tray-mode'
+        'setting-compact-mode', 'setting-auto-start', 'setting-foreground-start', 'setting-tray-mode',
+        'setting-performance-mode'
     ];
 
     personalizationInputs.forEach(id => {
@@ -1204,7 +1245,8 @@ function setupEventListeners() {
             compactMode: false,
             autoStart: false,
             foregroundStart: true,
-            trayMode: false
+            trayMode: false,
+            performanceMode: false
         };
 
         document.getElementById('setting-app-name').value = p.appName || '';
@@ -1222,6 +1264,7 @@ function setupEventListeners() {
         document.getElementById('setting-auto-start').checked = !!p.autoStart;
         document.getElementById('setting-foreground-start').checked = !!p.foregroundStart;
         document.getElementById('setting-tray-mode').checked = !!p.trayMode;
+        document.getElementById('setting-performance-mode').checked = !!p.performanceMode;
 
         // Sync labels
         document.getElementById('val-glass-blur').textContent = p.glassBlur || 10;
