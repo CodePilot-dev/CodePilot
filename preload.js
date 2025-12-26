@@ -28,4 +28,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     gitPush: (path) => ipcRenderer.invoke('git-push', path),
     gitPull: (path) => ipcRenderer.invoke('git-pull', path),
     gitLog: (path) => ipcRenderer.invoke('git-log', path),
+    setLaunchAtStartup: (enabled) => ipcRenderer.invoke('set-launch-at-startup', enabled),
+    setWindowState: (state) => ipcRenderer.invoke('set-window-state', state),
 });

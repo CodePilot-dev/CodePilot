@@ -19,7 +19,9 @@ let config = {
             animationLevel: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             sidebarOpacity: 80,
             bgGlow: true,
-            compactMode: false
+            compactMode: false,
+            autoStart: false,
+            foregroundStart: true
         }
     }
 };
@@ -134,6 +136,12 @@ function applyPersonalization() {
     const logo = document.querySelector('.logo');
     if (logo) logo.textContent = p.appName || 'CODEPILOT';
     document.title = p.appName || 'CodePilot';
+
+    // Apply Win Settings
+    if (p.autoStart !== undefined) window.electronAPI.setLaunchAtStartup(p.autoStart);
+    if (p.foregroundStart) {
+        window.electronAPI.setWindowState({ focus: true });
+    }
 }
 
 async function checkForUpdates(manual = false) {
@@ -840,7 +848,9 @@ function setupEventListeners() {
             animationLevel: document.getElementById('setting-animations').value,
             sidebarOpacity: parseInt(document.getElementById('setting-sidebar-opacity').value),
             bgGlow: document.getElementById('setting-bg-glow').checked,
-            compactMode: document.getElementById('setting-compact-mode').checked
+            compactMode: document.getElementById('setting-compact-mode').checked,
+            autoStart: document.getElementById('setting-auto-start').checked,
+            foregroundStart: document.getElementById('setting-foreground-start').checked
         };
 
         // Update labels
@@ -858,7 +868,7 @@ function setupEventListeners() {
         'setting-app-name', 'setting-accent-color', 'setting-font-family',
         'setting-glass-blur', 'setting-border-radius', 'setting-card-size',
         'setting-animations', 'setting-sidebar-opacity', 'setting-bg-glow',
-        'setting-compact-mode'
+        'setting-compact-mode', 'setting-auto-start', 'setting-foreground-start'
     ];
 
     personalizationInputs.forEach(id => {
@@ -882,7 +892,9 @@ function setupEventListeners() {
             animationLevel: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             sidebarOpacity: 80,
             bgGlow: true,
-            compactMode: false
+            compactMode: false,
+            autoStart: false,
+            foregroundStart: true
         };
 
         document.getElementById('setting-app-name').value = p.appName || '';
@@ -897,6 +909,8 @@ function setupEventListeners() {
         document.getElementById('setting-sidebar-opacity').value = p.sidebarOpacity || 80;
         document.getElementById('setting-bg-glow').checked = p.bgGlow !== false;
         document.getElementById('setting-compact-mode').checked = !!p.compactMode;
+        document.getElementById('setting-auto-start').checked = !!p.autoStart;
+        document.getElementById('setting-foreground-start').checked = !!p.foregroundStart;
 
         // Sync labels
         document.getElementById('val-glass-blur').textContent = p.glassBlur || 10;

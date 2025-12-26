@@ -434,6 +434,22 @@ ipcMain.handle('window-maximize', () => {
 });
 ipcMain.handle('window-close', () => mainWindow.close());
 
+ipcMain.handle('set-launch-at-startup', (event, enabled) => {
+    app.setLoginItemSettings({
+        openAtLogin: enabled,
+        path: app.getPath('exe'),
+    });
+});
+
+ipcMain.handle('set-window-state', (event, { maximized, focus }) => {
+    if (!mainWindow) return;
+    if (maximized) mainWindow.maximize();
+    if (focus) {
+        mainWindow.show();
+        mainWindow.focus();
+    }
+});
+
 // Storage
 const configPath = path.join(app.getPath('userData'), 'config.json');
 
