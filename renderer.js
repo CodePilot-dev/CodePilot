@@ -62,10 +62,14 @@ const translations = {
         blur: "Flou",
         radius: "Arrondi",
         glow: "Lueur",
-        compact: "Compact",
-        auto_start: "Démarrage auto",
+        compact: "Mode Compact",
+        auto_start: "Lancement auto",
         foreground: "Affichage actif",
-        background: "Arrière-plan",
+        background: "Réduire en arrière-plan",
+        glow: "Lueur néon",
+        general: "Général",
+        appearance_title: "Apparence",
+        system: "Système",
         delete_proj_confirm: "Supprimer ce projet ?",
         delete_space_confirm: "Supprimer cet espace et tous ses projets ?",
         no_projects: "Prêt à coder ?",
@@ -117,10 +121,14 @@ const translations = {
         blur: "Blur",
         radius: "Radius",
         glow: "Glow",
-        compact: "Compact",
-        auto_start: "Auto Start",
+        compact: "Compact Mode",
+        auto_start: "Auto Launch",
         foreground: "Active Display",
-        background: "Background Mode",
+        background: "Minimize to Tray",
+        glow: "Neon Glow",
+        general: "General",
+        appearance_title: "Appearance",
+        system: "System",
         delete_proj_confirm: "Delete this project?",
         delete_space_confirm: "Delete this workspace and all its projects?",
         no_projects: "Ready to code?",
@@ -925,6 +933,22 @@ function applyLanguage() {
         const span = sidebarOpacityLabel.querySelector('span');
         sidebarOpacityLabel.innerHTML = `${t('sidebar_opacity')} : ${span ? span.outerHTML : ''}%`;
     }
+
+    // Section Titles
+    const sections = document.querySelectorAll('.settings-section h4');
+    if (sections.length >= 3) {
+        sections[0].textContent = '📱 ' + t('general');
+        sections[1].textContent = '🎨 ' + t('appearance_title');
+        sections[2].textContent = '⚙️ ' + t('system');
+    }
+
+    // Checkbox Labels
+    const glowLabel = document.getElementById('label-glow');
+    if (glowLabel) glowLabel.textContent = t('glow');
+    const compactLabel = document.getElementById('label-compact');
+    if (compactLabel) compactLabel.textContent = t('compact');
+    const autoStartLabel = document.querySelector('label[for="setting-auto-start"]');
+    if (autoStartLabel) autoStartLabel.textContent = t('auto_start');
 
     // Modals & Settings
     // (Many are updated when opened, but let's do the static ones)

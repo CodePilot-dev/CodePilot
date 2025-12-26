@@ -400,76 +400,81 @@
 
                     <div class="settings-col">
                         <div class="settings-section">
-                            <h4>📱 Interface & Nom</h4>
-                            <div class="input-group">
-                                <label id="label-setting-app-name">Nom de l'application</label>
-                                <input type="text" id="setting-app-name" placeholder="CODEPILOT">
+                            <h4>📱 Général</h4>
+                            <div class="settings-grid">
+                                <div class="input-group">
+                                    <label id="label-setting-app-name">Nom</label>
+                                    <input type="text" id="setting-app-name" placeholder="CODEPILOT">
+                                </div>
+                                <div class="input-group">
+                                    <label id="label-setting-language">Langue</label>
+                                    <select id="setting-language">
+                                        <option value="fr">Français</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="input-group">
-                                <label id="label-setting-language">Langue</label>
-                                <select id="setting-language">
-                                    <option value="fr">Français</option>
-                                    <option value="en">English</option>
-                                </select>
+                        <div class="settings-section">
+                            <h4>🎨 Apparence</h4>
+                            <div class="settings-grid">
+                                <div class="input-group">
+                                    <label id="label-setting-font">Police</label>
+                                    <select id="setting-font-family">
+                                        <option value="'Outfit', sans-serif">Outfit</option>
+                                        <option value="'JetBrains Mono', monospace">JetBrains</option>
+                                        <option value="'Inter', sans-serif">Inter</option>
+                                        <option value="system-ui">Système</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label id="label-setting-animations">Animations</label>
+                                    <select id="setting-animations">
+                                        <option value="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)">Fluide</option>
+                                        <option value="all 0.15s ease">Rapide</option>
+                                        <option value="none">Aucune</option>
+                                    </select>
+                                </div>
                             </div>
-
-                            <div class="input-group">
-                                <label id="label-setting-font">Police principale</label>
-                                <select id="setting-font-family">
-                                    <option value="'Outfit', sans-serif">Outfit (Moderne)</option>
-                                    <option value="'JetBrains Mono', monospace">JetBrains (Code)</option>
-                                    <option value="'Inter', sans-serif">Inter (Standard)</option>
-                                    <option value="system-ui">Système</option>
-                                </select>
+                            <div class="settings-grid">
+                                <div class="input-group">
+                                    <label id="label-setting-card-size">Cartes : <span
+                                            id="val-card-size">280</span>px</label>
+                                    <input type="range" id="setting-card-size" min="200" max="400" value="280">
+                                </div>
+                                <div class="input-group">
+                                    <label id="label-setting-sidebar-opacity">Sidebar : <span
+                                            id="val-sidebar-opacity">100</span>%</label>
+                                    <input type="range" id="setting-sidebar-opacity" min="50" max="100" value="100">
+                                </div>
                             </div>
-
-                            <div class="input-group">
-                                <label id="label-setting-card-size">Taille des cartes : <span
-                                        id="val-card-size">280</span>px</label>
-                                <input type="range" id="setting-card-size" min="200" max="400" value="280">
-                            </div>
-
-                            <div class="input-group">
-                                <label id="label-setting-animations">Animations</label>
-                                <select id="setting-animations">
-                                    <option value="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)">Fluide</option>
-                                    <option value="all 0.15s ease">Rapide</option>
-                                    <option value="none">Aucune</option>
-                                </select>
-                            </div>
-
-                            <div class="input-group">
-                                <label id="label-setting-sidebar-opacity">Opacité Sidebar : <span
-                                        id="val-sidebar-opacity">100</span>%</label>
-                                <input type="range" id="setting-sidebar-opacity" min="50" max="100" value="100">
-                            </div>
-
-                            <div style="display: flex; gap: 20px; align-items: center; margin-top: 20px;">
+                            <div class="settings-grid">
                                 <div class="checkbox-group">
                                     <input type="checkbox" id="setting-bg-glow">
-                                    <label for="setting-bg-glow">Lueur</label>
+                                    <label for="setting-bg-glow" id="label-glow">Lueur</label>
                                 </div>
                                 <div class="checkbox-group">
                                     <input type="checkbox" id="setting-compact-mode">
-                                    <label for="setting-compact-mode">Compact</label>
+                                    <label for="setting-compact-mode" id="label-compact">Compact</label>
                                 </div>
                             </div>
+                        </div>
 
-                            <div style="display: flex; gap: 20px; align-items: center; margin-top: 15px;">
+                        <div class="settings-section">
+                            <h4>⚙️ Système</h4>
+                            <div class="settings-grid">
                                 <div class="checkbox-group">
                                     <input type="checkbox" id="setting-auto-start">
-                                    <label for="setting-auto-start">Démarrage auto</label>
+                                    <label for="setting-auto-start">Lancement auto</label>
                                 </div>
                                 <div class="checkbox-group">
                                     <input type="checkbox" id="setting-foreground-start">
-                                    <label for="setting-foreground-start"
-                                        title="Affiche l'app au lieu de la réduire dans la barre des tâches">Affichage
-                                        actif</label>
+                                    <label for="setting-foreground-start" id="label-foreground">Affichage actif</label>
                                 </div>
-                                <div class="checkbox-group">
+                                <div class="checkbox-group" style="grid-column: span 2;">
                                     <input type="checkbox" id="setting-tray-mode">
-                                    <label for="setting-tray-mode" id="label-tray-mode">Arrière-plan</label>
+                                    <label for="setting-tray-mode" id="label-tray-mode">Réduire en arrière-plan</label>
                                 </div>
                             </div>
                         </div>
