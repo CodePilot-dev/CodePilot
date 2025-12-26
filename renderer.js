@@ -906,6 +906,26 @@ function applyLanguage() {
     const trayLabel = document.getElementById('label-tray-mode');
     if (trayLabel) trayLabel.textContent = t('background');
 
+    // Settings Modal specific labels
+    const langLabel = document.getElementById('label-setting-language');
+    if (langLabel) langLabel.textContent = t('language');
+    const appNameLabel = document.getElementById('label-setting-app-name');
+    if (appNameLabel) appNameLabel.textContent = t('app_name');
+    const fontLabel = document.getElementById('label-setting-font');
+    if (fontLabel) fontLabel.textContent = t('font');
+    const cardSizeLabel = document.getElementById('label-setting-card-size');
+    if (cardSizeLabel) {
+        const span = cardSizeLabel.querySelector('span');
+        cardSizeLabel.innerHTML = `${t('card_size')} : ${span ? span.outerHTML : ''}px`;
+    }
+    const animLabel = document.getElementById('label-setting-animations');
+    if (animLabel) animLabel.textContent = t('animations');
+    const sidebarOpacityLabel = document.getElementById('label-setting-sidebar-opacity');
+    if (sidebarOpacityLabel) {
+        const span = sidebarOpacityLabel.querySelector('span');
+        sidebarOpacityLabel.innerHTML = `${t('sidebar_opacity')} : ${span ? span.outerHTML : ''}%`;
+    }
+
     // Modals & Settings
     // (Many are updated when opened, but let's do the static ones)
     const settingsTitle = document.querySelector('#settings-modal h3');

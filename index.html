@@ -402,12 +402,12 @@
                         <div class="settings-section">
                             <h4>📱 Interface & Nom</h4>
                             <div class="input-group">
-                                <label>Nom de l'application</label>
+                                <label id="label-setting-app-name">Nom de l'application</label>
                                 <input type="text" id="setting-app-name" placeholder="CODEPILOT">
                             </div>
 
                             <div class="input-group">
-                                <label>Langue / Language</label>
+                                <label id="label-setting-language">Langue</label>
                                 <select id="setting-language">
                                     <option value="fr">Français</option>
                                     <option value="en">English</option>
@@ -415,7 +415,7 @@
                             </div>
 
                             <div class="input-group">
-                                <label>Police principale</label>
+                                <label id="label-setting-font">Police principale</label>
                                 <select id="setting-font-family">
                                     <option value="'Outfit', sans-serif">Outfit (Moderne)</option>
                                     <option value="'JetBrains Mono', monospace">JetBrains (Code)</option>
@@ -425,12 +425,13 @@
                             </div>
 
                             <div class="input-group">
-                                <label>Taille des cartes : <span id="val-card-size">280</span>px</label>
+                                <label id="label-setting-card-size">Taille des cartes : <span
+                                        id="val-card-size">280</span>px</label>
                                 <input type="range" id="setting-card-size" min="200" max="400" value="280">
                             </div>
 
                             <div class="input-group">
-                                <label>Animations</label>
+                                <label id="label-setting-animations">Animations</label>
                                 <select id="setting-animations">
                                     <option value="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)">Fluide</option>
                                     <option value="all 0.15s ease">Rapide</option>
@@ -439,7 +440,8 @@
                             </div>
 
                             <div class="input-group">
-                                <label>Opacité Sidebar : <span id="val-sidebar-opacity">100</span>%</label>
+                                <label id="label-setting-sidebar-opacity">Opacité Sidebar : <span
+                                        id="val-sidebar-opacity">100</span>%</label>
                                 <input type="range" id="setting-sidebar-opacity" min="50" max="100" value="100">
                             </div>
 
