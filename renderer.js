@@ -98,7 +98,7 @@ const translations = {
         v_done: "Terminé",
         v_add_step: "Ajouter une étape",
         forced_update_title: "Mise à jour obligatoire",
-        forced_update_desc: "Une mise à jour critique est disponible. Pour des raisons de sécurité, vous devez mettre à jour CodePilot avant de continuer.",
+        forced_update_desc: "Vous êtes sur une version obsolète de CodePilot. Pour profiter des dernières fonctionnalités et pour des raisons de sécurité, vous devez mettre à jour CodePilot avant de continuer.",
         update_btn: "Mettre à jour maintenant"
     },
     en: {
@@ -161,7 +161,7 @@ const translations = {
         v_done: "Done",
         v_add_step: "Add a step",
         forced_update_title: "Mandatory Update",
-        forced_update_desc: "A critical update is available. For security reasons, you must update CodePilot before continuing.",
+        forced_update_desc: "You are using an obsolete version of CodePilot. To enjoy the latest features and for security reasons, you must update CodePilot before continuing.",
         update_btn: "Update Now"
     }
 };
