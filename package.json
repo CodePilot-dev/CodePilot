@@ -1,6 +1,6 @@
 {
   "name": "codepilot",
-  "version": "1.0.2",
+  "version": "1.1.4",
   "description": "CodePilot - Your ultimate dev project hub",
   "main": "main.js",
   "type": "module",

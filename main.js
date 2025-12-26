@@ -506,12 +506,21 @@ ipcMain.handle('set-tray-mode', (event, enabled) => {
 const configPath = path.join(app.getPath('userData'), 'config.json');
 
 ipcMain.handle('get-config', () => {
-    if (fs.existsSync(configPath)) {
-        return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    try {
+        if (fs.existsSync(configPath)) {
+            const content = fs.readFileSync(configPath, 'utf-8');
+            return JSON.parse(content);
+        }
+    } catch (e) {
+        console.error("Failed to load config, returning default:", e);
     }
     return { spaces: [{ id: 'default', name: 'Général', projects: [] }], settings: { githubToken: '', gitlabToken: '' } };
 });
 
 ipcMain.handle('save-config', (event, config) => {
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    try {
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    } catch (e) {
+        console.error("Failed to save config:", e);
+    }
 });

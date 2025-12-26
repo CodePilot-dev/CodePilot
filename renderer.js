@@ -215,7 +215,13 @@ async function init() {
     const versionDisplay = document.getElementById('app-version-display');
     if (versionDisplay) versionDisplay.textContent = `v${APP_VERSION}`;
 
-    const savedConfig = await window.electronAPI.getConfig();
+    let savedConfig = null;
+    try {
+        savedConfig = await window.electronAPI.getConfig();
+    } catch (e) {
+        console.error("Renderer: Failed to fetch config:", e);
+    }
+
     if (savedConfig) {
         config = savedConfig;
     }
