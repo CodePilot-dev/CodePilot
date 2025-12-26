@@ -439,30 +439,35 @@ function renderSpaces() {
 }
 
 function moveProjectToSpace(projectId, targetSpaceId) {
-    let projectToMove = null;
-    let originalSpaceId = null;
+    let sourceSpace = null;
+    let projectIdx = -1;
 
-    // Find and remove from original space
+    // Localize the project first
     config.spaces.forEach(s => {
         const idx = s.projects.findIndex(p => p.id == projectId);
         if (idx !== -1) {
-            projectToMove = s.projects.splice(idx, 1)[0];
-            originalSpaceId = s.id;
+            sourceSpace = s;
+            projectIdx = idx;
         }
     });
 
-    if (projectToMove && originalSpaceId !== targetSpaceId) {
+    if (sourceSpace && sourceSpace.id !== targetSpaceId) {
+        // Remove from source
+        const projectToMove = sourceSpace.projects.splice(projectIdx, 1)[0];
+
+        // Add to target
         const targetSpace = config.spaces.find(s => s.id === targetSpaceId);
         if (targetSpace) {
             targetSpace.projects.push(projectToMove);
             save();
             renderProjects();
             showToast(t('all_projects'), `Projet déplacé vers ${targetSpace.name}`);
+        } else {
+            // Rollback if target not found (safety)
+            sourceSpace.projects.splice(projectIdx, 0, projectToMove);
         }
-    } else if (originalSpaceId === targetSpaceId) {
-        // Same space, do nothing
     } else {
-        console.error("Project not found or same workspace");
+        // Same space or not found: cancel operation (nothing to do)
     }
 }
 
