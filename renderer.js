@@ -636,7 +636,7 @@ function togglePin(id) {
 }
 
 function detectFramework(pkg) {
-    if (!pkg) return null;
+    if (!pkg) return { id: 'html', name: 'HTML' };
     const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
     if (allDeps['next']) return { id: 'next', name: 'Next.js' };
     if (allDeps['react']) return { id: 'react', name: 'React' };
@@ -758,7 +758,8 @@ function renderFilterBar() {
         { id: 'svelte', name: 'Svelte' },
         { id: 'electron', name: 'Electron' },
         { id: 'vite', name: 'Vite' },
-        { id: 'ts', name: 'TS' }
+        { id: 'ts', name: 'TS' },
+        { id: 'html', name: 'HTML' }
     ];
 
     frameworks.forEach(fw => {
@@ -1195,7 +1196,13 @@ function setupEventListeners() {
                 document.getElementById('git-commit-message').value = '';
                 await refreshGitStatus();
             } else {
-                alert(`Erreur Commit: ${commitRes.error}`);
+                let msg = commitRes.error;
+                if (msg.includes('nothing to commit') || msg.includes('no changes added to commit')) {
+                    msg = "Aucun changement à valider. Assurez-vous d'avoir des fichiers modifiés.";
+                } else if (msg.includes('tell me who you are')) {
+                    msg = "Configuration Git manquante (user.name/user.email).";
+                }
+                alert(`Erreur Commit: ${msg}`);
             }
         } else {
             alert(`Erreur Add: ${addRes.error}`);

@@ -517,14 +517,63 @@ textarea:focus {
 
 .fw-badge {
     font-size: 0.65rem;
-    padding: 3px 8px;
+    padding: 3px 10px;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
     color: var(--text-muted);
-    font-weight: 500;
+    font-weight: 700;
     text-transform: uppercase;
     display: inline-block;
+    letter-spacing: 0.02em;
+}
+
+.fw-badge.react {
+    color: #61dafb;
+    border-color: rgba(97, 218, 251, 0.3);
+    background: rgba(97, 218, 251, 0.05);
+}
+
+.fw-badge.vue {
+    color: #42b883;
+    border-color: rgba(66, 184, 131, 0.3);
+    background: rgba(66, 184, 131, 0.05);
+}
+
+.fw-badge.next {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.fw-badge.svelte {
+    color: #ff3e00;
+    border-color: rgba(255, 62, 0, 0.3);
+    background: rgba(255, 62, 0, 0.05);
+}
+
+.fw-badge.electron {
+    color: #9feaf9;
+    border-color: rgba(159, 234, 249, 0.3);
+    background: rgba(159, 234, 249, 0.05);
+}
+
+.fw-badge.vite {
+    color: #ffc517;
+    border-color: rgba(255, 197, 23, 0.3);
+    background: rgba(255, 197, 23, 0.05);
+}
+
+.fw-badge.ts {
+    color: #3178c6;
+    border-color: rgba(49, 120, 198, 0.3);
+    background: rgba(49, 120, 198, 0.05);
+}
+
+.fw-badge.html {
+    color: #e34c26;
+    border-color: rgba(227, 76, 38, 0.3);
+    background: rgba(227, 76, 38, 0.05);
 }
 
 .project-info p {
