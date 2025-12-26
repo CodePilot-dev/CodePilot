@@ -1434,32 +1434,39 @@ function setupEventListeners() {
     const ctxProjectActions = document.getElementById('ctx-project-actions');
 
     document.addEventListener('contextmenu', (e) => {
-        const card = e.target.closest('.project-card');
-        const grid = e.target.closest('.projects-grid');
+        // Allow default context menu for inputs
+        if (e.target.closest('input, textarea, [contenteditable="true"]')) return;
 
-        if (card || grid) {
+        const card = e.target.closest('.project-card');
+        const mainContent = e.target.closest('.content');
+        const sidebar = e.target.closest('.sidebar');
+
+        if (card || mainContent || sidebar) {
             e.preventDefault();
             contextMenuTarget = card ? card._project : null;
 
             // Toggle visibility of project-specific actions
             if (contextMenuTarget) {
-                ctxProjectActions.classList.remove('hidden');
+                ctxProjectActions.style.display = 'block';
                 document.getElementById('ctx-pin').innerHTML = `<span>${contextMenuTarget.pinned ? '★' : '☆'}</span> ${contextMenuTarget.pinned ? 'Désépingler' : 'Épingler'}`;
 
                 // Show/Hide repo action
                 const repoItem = document.getElementById('ctx-repo');
                 if (contextMenuTarget.repoUrl) {
-                    repoItem.classList.remove('hidden');
+                    repoItem.style.display = 'flex';
                 } else {
-                    repoItem.classList.add('hidden');
+                    repoItem.style.display = 'none';
                 }
             } else {
-                ctxProjectActions.classList.add('hidden');
+                ctxProjectActions.style.display = 'none';
             }
 
-            ctxMenu.style.left = `${e.pageX}px`;
-            ctxMenu.style.top = `${e.pageY}px`;
+            // ClientX/Y is better for position: fixed
+            ctxMenu.style.left = `${e.clientX}px`;
+            ctxMenu.style.top = `${e.clientY}px`;
             ctxMenu.classList.remove('hidden');
+        } else {
+            ctxMenu.classList.add('hidden');
         }
     });
 
