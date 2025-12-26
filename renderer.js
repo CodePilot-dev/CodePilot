@@ -1148,7 +1148,13 @@ function setupEventListeners() {
 
     personalizationInputs.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.oninput = updatePreview;
+        if (el) {
+            if (el.type === 'checkbox') {
+                el.onchange = updatePreview;
+            } else {
+                el.oninput = updatePreview;
+            }
+        }
     });
 
     document.getElementById('check-update-btn').onclick = (e) => {
