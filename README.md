@@ -2,9 +2,7 @@
 
 **CodePilot** est une application pensée **par et pour les développeurs**, qui centralise la gestion de tes projets au même endroit.
 
-Moins de clics, moins de galères, meilleur environnement ⚡
-
-> Un hub tout-en-un pour gérer, lancer et organiser tes projets de dev.
+Gérer plusieurs projets dev à la fois, c’est le chaos. Trello, Notion, GitHub… rien n’est conçu pour ça, j’ai expérimenté une approche différente pour centraliser mes projets, lancer mes scripts plus vite et rester focus sur le code.
 
 ---
 
