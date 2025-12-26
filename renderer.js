@@ -35,6 +35,7 @@ let activeFilters = {
     frameworks: []
 };
 let currentRenderId = 0;
+let contextMenuTarget = null;
 const translations = {
     fr: {
         workspaces: "Espaces",
@@ -93,7 +94,10 @@ const translations = {
         v_finished: "Terminé le",
         v_upcoming: "À venir",
         v_done: "Terminé",
-        v_add_step: "Ajouter une étape"
+        v_add_step: "Ajouter une étape",
+        forced_update_title: "Mise à jour obligatoire",
+        forced_update_desc: "Une mise à jour critique est disponible. Pour des raisons de sécurité, vous devez mettre à jour CodePilot avant de continuer.",
+        update_btn: "Mettre à jour maintenant"
     },
     en: {
         workspaces: "Workspaces",
@@ -151,8 +155,11 @@ const translations = {
         v_scheduled: "Scheduled on",
         v_finished: "Finished on",
         v_upcoming: "Upcoming",
-        v_done: "Finished",
-        v_add_step: "Add a step"
+        v_done: "Done",
+        v_add_step: "Add a step",
+        forced_update_title: "Mandatory Update",
+        forced_update_desc: "A critical update is available. For security reasons, you must update CodePilot before continuing.",
+        update_btn: "Update Now"
     }
 };
 let APP_VERSION = '0.0.0';
@@ -273,9 +280,20 @@ async function checkForUpdates(manual = false) {
         const latest = result.version;
         const current = APP_VERSION;
 
-        // Simple semantic version comparison: 0.1.3 -> [0, 1, 3]
         const latestParts = latest.split('.').map(Number);
         const currentParts = current.split('.').map(Number);
+
+        // Forced update if major or minor is higher
+        const isForced = latestParts[0] > currentParts[0] || latestParts[1] > currentParts[1];
+
+        if (isForced) {
+            const forcedModal = document.getElementById('forced-update-modal');
+            if (forcedModal) {
+                forcedModal.classList.remove('hidden');
+                document.getElementById('forced-update-btn').onclick = () => startUpdate();
+            }
+            return; // Block execution
+        }
 
         let isNewer = false;
         for (let i = 0; i < 3; i++) {
@@ -593,6 +611,8 @@ async function createProjectCard(project) {
     card.ondragend = () => {
         card.classList.remove('dragging');
     };
+
+    card._project = project; // Store for context menu
 
     return card;
 }
@@ -1015,6 +1035,14 @@ function applyLanguage() {
     const autoStartLabel = document.querySelector('label[for="setting-auto-start"]');
     if (autoStartLabel) autoStartLabel.textContent = t('auto_start');
 
+    // Forced Update labels
+    const forcedTitle = document.getElementById('label-forced-update-title');
+    if (forcedTitle) forcedTitle.textContent = t('forced_update_title');
+    const forcedDesc = document.getElementById('label-forced-update-desc');
+    if (forcedDesc) forcedDesc.textContent = t('forced_update_desc');
+    const forcedBtn = document.getElementById('forced-update-btn');
+    if (forcedBtn) forcedBtn.textContent = t('update_btn');
+
     // Modals & Settings
     // (Many are updated when opened, but let's do the static ones)
     const settingsTitle = document.querySelector('#settings-modal h3');
@@ -1400,6 +1428,82 @@ function setupEventListeners() {
     document.getElementById('cancel-release').onclick = () => releaseModal.classList.add('hidden');
     document.getElementById('cancel-settings').onclick = () => settingsModal.classList.add('hidden');
     document.getElementById('close-detail').onclick = () => detailModal.classList.add('hidden');
+
+    // Context Menu Logic
+    const ctxMenu = document.getElementById('context-menu');
+    const ctxProjectActions = document.getElementById('ctx-project-actions');
+
+    document.addEventListener('contextmenu', (e) => {
+        const card = e.target.closest('.project-card');
+        const grid = e.target.closest('.projects-grid');
+
+        if (card || grid) {
+            e.preventDefault();
+            contextMenuTarget = card ? card._project : null;
+
+            // Toggle visibility of project-specific actions
+            if (contextMenuTarget) {
+                ctxProjectActions.classList.remove('hidden');
+                document.getElementById('ctx-pin').innerHTML = `<span>${contextMenuTarget.pinned ? '★' : '☆'}</span> ${contextMenuTarget.pinned ? 'Désépingler' : 'Épingler'}`;
+
+                // Show/Hide repo action
+                const repoItem = document.getElementById('ctx-repo');
+                if (contextMenuTarget.repoUrl) {
+                    repoItem.classList.remove('hidden');
+                } else {
+                    repoItem.classList.add('hidden');
+                }
+            } else {
+                ctxProjectActions.classList.add('hidden');
+            }
+
+            ctxMenu.style.left = `${e.pageX}px`;
+            ctxMenu.style.top = `${e.pageY}px`;
+            ctxMenu.classList.remove('hidden');
+        }
+    });
+
+    document.addEventListener('click', () => {
+        ctxMenu.classList.add('hidden');
+    });
+
+    // Context Menu Actions
+    document.getElementById('ctx-new').onclick = () => addProjectBtn.click();
+    document.getElementById('ctx-new-space').onclick = () => addSpaceBtn.click();
+    document.getElementById('ctx-refresh').onclick = () => window.location.reload();
+
+    document.getElementById('ctx-open').onclick = () => {
+        if (contextMenuTarget) openDetailModal(contextMenuTarget);
+    };
+    document.getElementById('ctx-edit').onclick = () => {
+        if (contextMenuTarget) openEditModal(contextMenuTarget);
+    };
+    document.getElementById('ctx-pin').onclick = () => {
+        if (contextMenuTarget) togglePin(contextMenuTarget.id);
+    };
+    document.getElementById('ctx-delete').onclick = () => {
+        if (contextMenuTarget) deleteProject(contextMenuTarget.id);
+    };
+
+    // Advanced Actions
+    document.getElementById('ctx-vscode').onclick = () => {
+        if (contextMenuTarget) window.electronAPI.openInEditor(contextMenuTarget.path, contextMenuTarget.editor || 'code');
+    };
+    document.getElementById('ctx-terminal').onclick = () => {
+        if (contextMenuTarget) window.electronAPI.openTerminal(contextMenuTarget.path);
+    };
+    document.getElementById('ctx-folder').onclick = () => {
+        if (contextMenuTarget) window.electronAPI.openPath(contextMenuTarget.path);
+    };
+    document.getElementById('ctx-repo').onclick = () => {
+        if (contextMenuTarget && contextMenuTarget.repoUrl) window.electronAPI.openExternal(contextMenuTarget.repoUrl);
+    };
+    document.getElementById('ctx-copy-path').onclick = () => {
+        if (contextMenuTarget) {
+            navigator.clipboard.writeText(contextMenuTarget.path);
+            showToast("Chemin copié", contextMenuTarget.path);
+        }
+    };
 
     document.getElementById('confirm-settings').onclick = () => {
         config.settings.githubToken = document.getElementById('github-token-input').value.trim();

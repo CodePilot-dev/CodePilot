@@ -500,6 +500,48 @@
 
     <div id="toast-container"></div>
 
+    <!-- Context Menu Custom -->
+    <div id="context-menu" class="context-menu hidden">
+        <div class="context-menu-item" id="ctx-new"><span>+</span> Nouveau Projet</div>
+        <div class="context-menu-item" id="ctx-new-space"><span>🚀</span> Nouvel Espace</div>
+        <div class="context-menu-item" id="ctx-refresh"><span>🔄</span> Actualiser</div>
+
+        <div id="ctx-project-actions">
+            <div class="context-separator"></div>
+            <div class="context-menu-item" id="ctx-open"><span>📂</span> Ouvrir le Hub</div>
+            <div class="context-menu-item" id="ctx-edit"><span>✎</span> Modifier les infos</div>
+            <div class="context-menu-item" id="ctx-pin"><span>★</span> Épingler</div>
+
+            <div class="context-separator"></div>
+            <div class="context-menu-item" id="ctx-vscode"><span>💻</span> Ouvrir dans VS Code</div>
+            <div class="context-menu-item" id="ctx-terminal"><span>⌨️</span> Ouvrir le Terminal</div>
+            <div class="context-menu-item" id="ctx-folder"><span>📁</span> Voir le dossier</div>
+            <div class="context-menu-item" id="ctx-repo"><span>🌐</span> Voir le Repository</div>
+            <div class="context-menu-item" id="ctx-copy-path"><span>📋</span> Copier le chemin</div>
+
+            <div class="context-separator"></div>
+            <div class="context-menu-item danger" id="ctx-delete"><span>✕</span> Supprimer le projet</div>
+        </div>
+    </div>
+
+    <!-- Forced Update Modal -->
+    <div id="forced-update-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 450px; text-align: center; padding: 40px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🛡️</div>
+            <h2 id="label-forced-update-title" style="margin-bottom: 15px; color: var(--primary);">Mise à jour
+                obligatoire</h2>
+            <p id="label-forced-update-desc" style="margin-bottom: 30px; line-height: 1.6; color: var(--text-muted);">
+                Vous êtes sur une version obsolète de CodePilot. Pour profiter des dernières fonctionnalités et pour des
+                raisons de sécurité, vous devez mettre à jour
+                CodePilot avant de continuer.
+            </p>
+            <button id="forced-update-btn" class="primary-btn" style="width: 100%; padding: 15px; font-size: 1.1rem;">
+                Mettre à jour maintenant
+            </button>
+        </div>
+    </div>
+
+    <!-- Global Scripts -->
     <script type="module" src="renderer.js"></script>
 </body>
 
