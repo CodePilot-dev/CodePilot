@@ -414,8 +414,56 @@ function renderSpaces() {
                 save();
             }
         };
+
+        // Drag & Drop for spaces
+        item.ondragover = (e) => {
+            e.preventDefault();
+            item.classList.add('drag-over');
+        };
+
+        item.ondragleave = () => {
+            item.classList.remove('drag-over');
+        };
+
+        item.ondrop = (e) => {
+            e.preventDefault();
+            item.classList.remove('drag-over');
+            const projectId = e.dataTransfer.getData('projectId');
+            if (projectId) {
+                moveProjectToSpace(projectId, space.id);
+            }
+        };
+
         spacesList.appendChild(item);
     });
+}
+
+function moveProjectToSpace(projectId, targetSpaceId) {
+    let projectToMove = null;
+    let originalSpaceId = null;
+
+    // Find and remove from original space
+    config.spaces.forEach(s => {
+        const idx = s.projects.findIndex(p => p.id == projectId);
+        if (idx !== -1) {
+            projectToMove = s.projects.splice(idx, 1)[0];
+            originalSpaceId = s.id;
+        }
+    });
+
+    if (projectToMove && originalSpaceId !== targetSpaceId) {
+        const targetSpace = config.spaces.find(s => s.id === targetSpaceId);
+        if (targetSpace) {
+            targetSpace.projects.push(projectToMove);
+            save();
+            renderProjects();
+            showToast(t('all_projects'), `Projet déplacé vers ${targetSpace.name}`);
+        }
+    } else if (originalSpaceId === targetSpaceId) {
+        // Same space, do nothing
+    } else {
+        console.error("Project not found or same workspace");
+    }
 }
 
 async function renderProjects() {
@@ -529,6 +577,16 @@ async function createProjectCard(project) {
     card.querySelector('.pin-project').onclick = (e) => {
         e.stopPropagation();
         togglePin(project.id);
+    };
+
+    // Drag support
+    card.draggable = true;
+    card.ondragstart = (e) => {
+        e.dataTransfer.setData('projectId', project.id);
+        card.classList.add('dragging');
+    };
+    card.ondragend = () => {
+        card.classList.remove('dragging');
     };
 
     return card;

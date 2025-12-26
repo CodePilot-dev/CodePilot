@@ -364,6 +364,13 @@ select:focus {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.nav-item.drag-over {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: var(--primary);
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
 .delete-space {
     opacity: 0;
     font-size: 0.75rem;
@@ -542,6 +549,12 @@ select:focus {
     cursor: pointer;
     transition: var(--anim-speed);
     animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.project-card.dragging {
+    opacity: 0.5;
+    border: 2px dashed var(--primary);
+    transform: scale(0.98);
 }
 
 /* Card Glow Effect */
