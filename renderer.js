@@ -23,7 +23,7 @@ let config = {
             compactMode: false,
             autoStart: false,
             foregroundStart: true,
-            trayMode: false,
+            trayMode: true,
             performanceMode: false
         }
     }
