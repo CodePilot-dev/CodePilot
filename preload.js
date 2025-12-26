@@ -30,4 +30,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     gitLog: (path) => ipcRenderer.invoke('git-log', path),
     setLaunchAtStartup: (enabled) => ipcRenderer.invoke('set-launch-at-startup', enabled),
     setWindowState: (state) => ipcRenderer.invoke('set-window-state', state),
+    setTrayMode: (enabled) => ipcRenderer.invoke('set-tray-mode', enabled),
 });

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, dialog, Tray, Menu } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { exec, spawn } from 'child_process';
@@ -9,6 +9,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let mainWindow;
+let tray = null;
+let isQuitting = false;
+let trayMode = false;
 
 // Determine where to load the app from (allow hot-updates in userData)
 function getAppDir() {
@@ -37,6 +40,14 @@ function createWindow() {
         },
     });
 
+    mainWindow.on('close', (event) => {
+        if (!isQuitting && trayMode) {
+            event.preventDefault();
+            mainWindow.hide();
+        }
+        return false;
+    });
+
     if (process.env.VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
     } else {
@@ -62,6 +73,35 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
+
+app.on('before-quit', () => {
+    isQuitting = true;
+});
+
+function createTray() {
+    if (tray) return;
+
+    // Use current app icon or a default one
+    const iconPath = path.join(__dirname, 'icon.ico');
+    // Fallback if icon.ico doesn't exist in dev
+    const icon = fs.existsSync(iconPath) ? iconPath : path.join(__dirname, 'dist/icon.ico');
+
+    tray = new Tray(icon);
+    const contextMenu = Menu.buildFromTemplate([
+        { label: 'Ouvrir CodePilot', click: () => mainWindow.show() },
+        { type: 'separator' },
+        {
+            label: 'Quitter', click: () => {
+                isQuitting = true;
+                app.quit();
+            }
+        }
+    ]);
+
+    tray.setToolTip('CodePilot');
+    tray.setContextMenu(contextMenu);
+    tray.on('double-click', () => mainWindow.show());
+}
 
 ipcMain.handle('get-app-version', () => {
     try {
@@ -447,6 +487,18 @@ ipcMain.handle('set-window-state', (event, { maximized, focus }) => {
     if (focus) {
         mainWindow.show();
         mainWindow.focus();
+    }
+});
+
+ipcMain.handle('set-tray-mode', (event, enabled) => {
+    trayMode = enabled;
+    if (trayMode) {
+        createTray();
+    } else {
+        if (tray) {
+            tray.destroy();
+            tray = null;
+        }
     }
 });
 

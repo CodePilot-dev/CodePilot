@@ -22,7 +22,8 @@ let config = {
             bgGlow: true,
             compactMode: false,
             autoStart: false,
-            foregroundStart: true
+            foregroundStart: true,
+            trayMode: false
         }
     }
 };
@@ -64,6 +65,7 @@ const translations = {
         compact: "Compact",
         auto_start: "Démarrage auto",
         foreground: "Affichage actif",
+        background: "Arrière-plan",
         delete_proj_confirm: "Supprimer ce projet ?",
         delete_space_confirm: "Supprimer cet espace et tous ses projets ?",
         no_projects: "Prêt à coder ?",
@@ -118,6 +120,7 @@ const translations = {
         compact: "Compact",
         auto_start: "Auto Start",
         foreground: "Active Display",
+        background: "Background Mode",
         delete_proj_confirm: "Delete this project?",
         delete_space_confirm: "Delete this workspace and all its projects?",
         no_projects: "Ready to code?",
@@ -254,6 +257,7 @@ function applyPersonalization() {
     if (p.foregroundStart) {
         window.electronAPI.setWindowState({ focus: true });
     }
+    if (p.trayMode !== undefined) window.electronAPI.setTrayMode(p.trayMode);
 }
 
 async function checkForUpdates(manual = false) {
@@ -896,6 +900,12 @@ function applyLanguage() {
     const emptyDesc = document.querySelector('#empty-state p');
     if (emptyDesc) emptyDesc.textContent = t('add_first');
 
+    // Win settings labels
+    const foregroundLabel = document.querySelector('label[for="setting-foreground-start"]');
+    if (foregroundLabel) foregroundLabel.textContent = t('foreground');
+    const trayLabel = document.getElementById('label-tray-mode');
+    if (trayLabel) trayLabel.textContent = t('background');
+
     // Modals & Settings
     // (Many are updated when opened, but let's do the static ones)
     const settingsTitle = document.querySelector('#settings-modal h3');
@@ -1005,7 +1015,8 @@ function setupEventListeners() {
             bgGlow: document.getElementById('setting-bg-glow').checked,
             compactMode: document.getElementById('setting-compact-mode').checked,
             autoStart: document.getElementById('setting-auto-start').checked,
-            foregroundStart: document.getElementById('setting-foreground-start').checked
+            foregroundStart: document.getElementById('setting-foreground-start').checked,
+            trayMode: document.getElementById('setting-tray-mode').checked
         };
 
         // Update labels
@@ -1023,7 +1034,7 @@ function setupEventListeners() {
         'setting-app-name', 'setting-accent-color', 'setting-font-family',
         'setting-glass-blur', 'setting-border-radius', 'setting-card-size',
         'setting-animations', 'setting-sidebar-opacity', 'setting-bg-glow',
-        'setting-compact-mode', 'setting-auto-start', 'setting-foreground-start'
+        'setting-compact-mode', 'setting-auto-start', 'setting-foreground-start', 'setting-tray-mode'
     ];
 
     personalizationInputs.forEach(id => {
@@ -1049,7 +1060,8 @@ function setupEventListeners() {
             bgGlow: true,
             compactMode: false,
             autoStart: false,
-            foregroundStart: true
+            foregroundStart: true,
+            trayMode: false
         };
 
         document.getElementById('setting-app-name').value = p.appName || '';
@@ -1066,6 +1078,7 @@ function setupEventListeners() {
         document.getElementById('setting-compact-mode').checked = !!p.compactMode;
         document.getElementById('setting-auto-start').checked = !!p.autoStart;
         document.getElementById('setting-foreground-start').checked = !!p.foregroundStart;
+        document.getElementById('setting-tray-mode').checked = !!p.trayMode;
 
         // Sync labels
         document.getElementById('val-glass-blur').textContent = p.glassBlur || 10;
